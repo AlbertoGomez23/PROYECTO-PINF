@@ -1,0 +1,35 @@
+<html>
+<body>
+<pre>
+<h1>Build Log</h1>
+<h3>
+--------------------Configuration: PARALAJESMARTE - Win32 Debug--------------------
+</h3>
+<h3>Command Lines</h3>
+Creating temporary file "C:\DOCUME~1\XPMUser\CONFIG~1\Temp\RSP3.tmp" with contents
+[
+/check:bounds /compile_only /dbglibs /debug:full /nologo /traceback /warn:argument_checking /warn:nofileopt /module:"Debug/" /object:"Debug/" /pdbfile:"Debug/DF60.PDB" 
+"C:\Documents and Settings\Federico\Mis documentos\Almanaque Nautico\ParalajesMarte\driMarte.f"
+]
+Creating command line "link.exe kernel32.lib /nologo /subsystem:console /incremental:no /pdb:"Debug/PARALAJESMARTE.pdb" /debug /machine:I386 /out:"Debug/PARALAJESMARTE.exe" /pdbtype:sept  ".\Debug\driMarte.obj" ".\Debug\funcione.obj" ".\Debug\LeeDE200.obj" "
+<h3>Output Window</h3>
+Compiling Fortran...
+C:\Documents and Settings\Federico\Mis documentos\Almanaque Nautico\ParalajesMarte\driMarte.f
+C:\Documents and Settings\Federico\Mis documentos\Almanaque Nautico\ParalajesMarte\driMarte.f(91) : Error: Syntax error, found END-OF-STATEMENT when expecting one of: ( <IDENTIFIER> <CHAR_CON_KIND_PARAM> <CHAR_NAM_KIND_PARAM> <CHARACTER_CONSTANT> <INTEGER_CONSTANT> ...
+     +    '&           ','&           ','&           \\',
+---------------------------------------------------------^
+C:\Documents and Settings\Federico\Mis documentos\Almanaque Nautico\ParalajesMarte\driMarte.f(92) : Error: This name does not have a type, and must have an explicit type.   [COPIAC004]
+  '     &  &$',c004(1:1),'$',c004(2:2),'\Minp ', COPIA
+---------------------------------------------------------------^
+C:\Documents and Settings\Federico\Mis documentos\Almanaque Nautico\ParalajesMarte\driMarte.f(92) : Error: A substring must be of type CHARACTER.   [COPIAC004]
+  '     &  &$',c004(1:1),'$',c004(2:2),'\Minp ', COPIA
+---------------------------------------------------------------^
+Error executing df.exe.
+
+
+
+<h3>Results</h3>
+PARALAJESMARTE.exe - 3 error(s), 0 warning(s)
+</pre>
+</body>
+</html>
