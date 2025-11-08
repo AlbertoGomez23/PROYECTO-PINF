@@ -15,3 +15,6 @@ venv
 
 # Archivo nasa
 .bsp
+
+# Python
+__pycache__
