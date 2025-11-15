@@ -1,6 +1,6 @@
 import math
 import numpy as np
-from SubrEstr import PI, TDBUT, TOCENT
+from estrellas.SubrEstr import PI, TDBUT, TOCENT
 from Comun.LeeDE440 import LEEEFJPL
 
 
