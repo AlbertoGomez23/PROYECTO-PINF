@@ -1,8 +1,18 @@
 import os
 import sys
+from pathlib import Path
 
-# Añadir el directorio actual al path
-sys.path.append(os.path.dirname(__file__))
+# Obtenemos la ruta absoluta de este fichero
+ruta_main = Path(__file__).resolve()
+
+# Obtenemos la ruta de estrellas 
+ruta_estrellas = ruta_main.parent
+
+# Obtenemos la ruta de src
+ruta_scr = ruta_estrellas.parent
+
+if str(ruta_scr) not in sys.path:
+    sys.path.append(str(ruta_scr))
 
 # Importar en el orden correcto para evitar dependencias circulares
 from SubrEstr import *

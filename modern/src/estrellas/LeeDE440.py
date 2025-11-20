@@ -2,6 +2,8 @@ import numpy as np
 import math
 from jplephem.spk import SPK
 import os
+from pathlib import Path
+
 
 # Variables globales
 class EPHHDR:
@@ -28,7 +30,7 @@ stcomx = STCOMX()
 NRECL = 1
 KSIZE = 2036  # Usamos el tamaño de DE405 como aproximación
 NRFILE = 12
-NAMFIL = "../Comun/de440.bsp"
+NAMFIL = "../data/de440.bsp"
 NCOEFFS = KSIZE // 2
 FIRST = True
 kernel = None
@@ -403,13 +405,13 @@ def FSIZER3():
     NRFILE = 12
     
     # Obtener el directorio actual del script
-    current_dir = os.path.dirname(os.path.abspath(__file__))
+    ruta_Lee = Path(__file__).resolve()
+    ruta_estrellas = ruta_Lee.parent
+    # Obtenemos la ruta de src
+    ruta_scr = ruta_estrellas.parent
+
     
-    # Navegar a la estructura correcta:
-    # Desde: /Modern/estrellas/Lee.py
-    # Hacia: /Modern/Comun/de440.bsp
-    modern_dir = os.path.dirname(current_dir)  # Sube a /Modern
-    NAMFIL = os.path.join(modern_dir, 'Comun', 'de440.bsp')
+    NAMFIL = os.path.join(ruta_scr, 'data', 'de440.bsp')
     
     print(f"Buscando efemérides en: {NAMFIL}")
     
@@ -419,13 +421,11 @@ def FSIZER3():
         
         # Debug: mostrar estructura de directorios
         print("\nEstructura de directorios:")
-        print(f"Directorio actual: {current_dir}")
-        print(f"Directorio Modern: {modern_dir}")
-        
-        if os.path.exists(modern_dir):
+                
+        if os.path.exists(ruta_scr):
             print("\nContenido de Modern/:")
-            for item in os.listdir(modern_dir):
-                item_path = os.path.join(modern_dir, item)
+            for item in os.listdir(ruta_scr):
+                item_path = os.path.join(ruta_scr, item)
                 if os.path.isdir(item_path):
                     print(f"{item}/")
                     # Mostrar contenido de Comun si existe

@@ -1,4 +1,5 @@
 import os
+from pathlib import Path
 import math
 import numpy as np
 from SubrEstr import DIAJUL, PI, HOMI, HOMIEN, SIGRMI
@@ -736,36 +737,48 @@ def UNANGGRA(g, m, i):
     
     return g, m
 
+
+
+# pero lo dejamos por compatibilidad con open() si prefieres.
+
 def ABREFICH(i, ano):
     """
-    Abre archivos de salida en una carpeta dentro del directorio actual
+    Abre archivos de salida en data/almanaque_nautico/[año]/
+    Creando la ruta si no existe.
     """
     can = str(ano)
     
-    # Obtener el directorio actual donde está el script
-    current_dir = os.path.dirname(os.path.abspath(__file__))
+    # 1. Obtener la ruta base del proyecto
+    # Path(__file__) es el archivo actual. .parent es su carpeta.
+    # Subimos los niveles necesarios segun tu logica original:
+    ruta_actual = Path(__file__).resolve().parent
+    ruta_proyecto = ruta_actual.parent.parent.parent 
+    # NOTA: Ajusta el número de .parent según dónde esté tu script exactamente. 
+    # Si tu script está en: proyecto/src/algo/script.py, usar 3 .parent suele llevar a 'proyecto'.
+
+    # 2. Definir la ruta destino: proyecto/data/almanaque_nautico/2024
+    # Usamos el operador '/' que une rutas limpiamente en pathlib
+    ano_dir = ruta_proyecto / "data" / "almanaque_nautico" / can
     
-    # Crear carpeta de resultados dentro del directorio actual
-    resultados_dir = os.path.join(current_dir, 'Resultados')
-    ano_dir = os.path.join(resultados_dir, can)
-    
-    # Crear directorios si no existen
-    os.makedirs(ano_dir, exist_ok=True)
+    # 3. Crear la carpeta si no existe
+    # parents=True crea las carpetas padres si faltan. exist_ok=True evita error si ya existe.
+    ano_dir.mkdir(parents=True, exist_ok=True)
     
     print(f"Guardando resultados en: {ano_dir}")
     
-    # Definir rutas de archivos (rutas absolutas)
+    # 4. Definir y abrir archivos usando la ruta creada
     if i != 1:
-        u376 = open(os.path.join(ano_dir, f'AN{can}376.DAT'), 'w', encoding='utf-8')
-        u377 = open(os.path.join(ano_dir, f'AN{can}377.DAT'), 'w', encoding='utf-8')
-        u378 = open(os.path.join(ano_dir, f'AN{can}378.DAT'), 'w', encoding='utf-8')
-        u379 = open(os.path.join(ano_dir, f'AN{can}379.DAT'), 'w', encoding='utf-8')
-        ucaras = open(os.path.join(ano_dir, f'AN{can}CARTAS.DAT'), 'w', encoding='utf-8')
-        ucarde = open(os.path.join(ano_dir, f'AN{can}CARTDE.DAT'), 'w', encoding='utf-8')
+        # Usamos (ano_dir / "nombre_archivo") para crear la ruta completa
+        u376 = open(ano_dir / f'AN{can}376.DAT', 'w', encoding='utf-8')
+        u377 = open(ano_dir / f'AN{can}377.DAT', 'w', encoding='utf-8')
+        u378 = open(ano_dir / f'AN{can}378.DAT', 'w', encoding='utf-8')
+        u379 = open(ano_dir / f'AN{can}379.DAT', 'w', encoding='utf-8')
+        ucaras = open(ano_dir / f'AN{can}CARTAS.DAT', 'w', encoding='utf-8')
+        ucarde = open(ano_dir / f'AN{can}CARTDE.DAT', 'w', encoding='utf-8')
         return u376, u377, u378, u379, None, None, ucaras, ucarde
     else:
-        u380 = open(os.path.join(ano_dir, f'AN{can}380.DAT'), 'w', encoding='utf-8')
-        u381 = open(os.path.join(ano_dir, f'AN{can}381.DAT'), 'w', encoding='utf-8')
+        u380 = open(ano_dir / f'AN{can}380.DAT', 'w', encoding='utf-8')
+        u381 = open(ano_dir / f'AN{can}381.DAT', 'w', encoding='utf-8')
         return None, None, None, None, u380, u381, None, None
 
 def LEEESTAN(i):
