@@ -1,0 +1,25 @@
+version: '3.8'
+
+services:
+  app:
+    # Construir la imagen usando el Dockerfile de la carpeta actual
+    build: . 
+    
+    # NOMBRE DEL CONTENEDOR (Para identificarlo fácil)
+    container_name: mi_dev_env
+
+    # VOLÚMENES (La parte crítica)
+    # Mapea la carpeta actual (.) a (/app) dentro del contenedor.
+    # Cualquier cambio que hagas en tu editor se refleja dentro inmediatamente.
+    volumes:
+      - .:/app
+      # Evita que la carpeta node_modules o venv local sobrescriba la del contenedor
+      # - /app/node_modules 
+
+    # PUERTOS
+    # Mapea el puerto 8000 de tu PC al 8000 del contenedor
+    ports:
+      - "8000:8000"
+
+    # COMANDO (Opcional: para reiniciar si el archivo cambia)
+    # command: python src/app.py
