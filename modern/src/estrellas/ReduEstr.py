@@ -1,6 +1,6 @@
 import math
 import numpy as np
-from SubrEstr import MATPRO
+from estrellas.SubrEstr import MATPRO
 
 def REDUESTR(arp, dep, arv, dev, par, vra, mpn, b_e, sol, dt):
     """

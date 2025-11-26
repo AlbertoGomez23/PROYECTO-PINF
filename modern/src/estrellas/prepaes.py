@@ -1,7 +1,7 @@
 import math
 import numpy as np
-from SubrEstr import PI, TDBUT, TOCENT
-from LeeDE440 import LEEEFJPL
+from estrellas.SubrEstr import PI, TDBUT, TOCENT
+from estrellas.LeeDE440 import LEEEFJPL
 
 
 # Constante global

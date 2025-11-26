@@ -1,7 +1,7 @@
 import math
 import numpy as np
-from SubrEstr import TDBTDT, TDBUT, PRENUT, PI
-from LeeDE440 import LEEEFJPL
+from estrellas.SubrEstr import TDBTDT, TDBUT, PRENUT, PI
+from estrellas.LeeDE440 import LEEEFJPL
 # Constante global
 sti2dia = 0.1157407407407407e-04  # 1/60/60/24
 
