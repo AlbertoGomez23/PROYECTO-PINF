@@ -3,7 +3,7 @@ name = "proyecto-pinf"
 version = "0.1.0"
 description = "Cálculo de posiciones planetarias y efemérides astronómicas"
 readme = "README.md"
-requires-python = ">=3.12"
+requires-python = "==3.12.12"
 dependencies = [
     "jplephem>=2.23",
     "skyfield>=1.53",

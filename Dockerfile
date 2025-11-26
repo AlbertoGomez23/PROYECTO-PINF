@@ -1,4 +1,4 @@
-FROM python:3.12-slim-bookworm
+FROM python:3.12.12-slim-bookworm
 
 # Instalar dependencias del sistema para Fortran y LaTeX
 RUN apt-get update && apt-get install -y \
