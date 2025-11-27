@@ -10,7 +10,6 @@
 #            cargan en memoria la primera vez que se llama a una función.
 # =============================================================================
 
-import numpy as np
 from skyfield.api import load
 # Importamos iau2000a (Modelo completo de alta precisión para nutación)
 from skyfield.nutationlib import iau2000a
@@ -27,7 +26,7 @@ DE440_PATH = BASE_DIR / "data" / "de440.bsp"
 
 # Variables Globales (Singleton) para evitar recargas
 _planets = None
-_ts = None
+_ts = load.timescale()  # Escala de tiempo (siempre cargada)
 
 # Constantes de Conversión
 AU_KM = 149597870.700  # km por Unidad Astronómica
@@ -90,18 +89,19 @@ def get_time_obj(jd, scale='tdb'):
         raise ValueError(f"Escala de tiempo '{scale}' no soportada. Usa 'tdb', 'tt', o 'utc'.")
 
 
-def get_delta_t(jd):
+def get_delta_t(ano):
     """
-    CABECERA:       get_delta_t(jd)
+    CABECERA:       get_delta_t(ano)
     DESCRIPCIÓN:    Obtiene la diferencia entre el tiempo terrestre y el universal.
                     Delta T = TT - UT1.
     
-    PRECONDICIÓN:   'jd': Fecha Juliana (generalmente TDB o TT).
+    PRECONDICIÓN:   'ano': año para el cual calcular delta_t.
     
     POSTCONDICIÓN:  Devuelve un float con Delta T en SEGUNDOS.
-                    Usa tablas históricas del IERS gestionadas por Skyfield.
+                    Tiene un error mínimo debido a que se calcula para la mitad del año.
     """
-    t = get_time_obj(jd)
+    t = _ts.utc(ano, 7, 2, 12, 0, 0)
+    
     return t.delta_t
 
 
