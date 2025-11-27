@@ -35,8 +35,6 @@
 				"donjayamanne.githistory",
 				"GitHub.vscode-pull-request-github",
 				"ms-python.isort",
-				"tecosaur.latex-utilities",
-				"James-Yu.latex-workshop",
 				"DavidAnson.vscode-markdownlint",
 				"christian-kohler.path-intellisense",
 				"mathematic.vscode-pdf",
@@ -46,14 +44,26 @@
 				"ms-python.vscode-python-envs",
 				"KevinRose.vsc-python-indent",
 				"fortran-lang.linter-gfortran",
-				"tamasfe.even-better-toml"
-			]
+				"tamasfe.even-better-toml",
+				"GitHub.copilot",
+				"GitHub.copilot-chat"
+			],
+			"settings": {
+				"[python]": {
+					"editor.defaultFormatter": "ms-python.autopep8",
+					"editor.formatOnSave": true,
+					"editor.codeActionsOnSave": {
+						"source.organizeImports": "explicit"
+					}
+				},
+				"python.analysis.typeCheckingMode": "basic"
+			}
 		}
 	},
 
 	// Uncomment to connect as an existing user other than the container default. More info: https://aka.ms/dev-containers-non-root.
 	"remoteUser": "vscode",
 	"containerEnv": {
-		"PYTHONPATH": "/app/modern/src:${PYTHONPATH}"
+		"PYTHONPATH": "/app/modern/src"
 	}
 }

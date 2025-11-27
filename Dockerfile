@@ -1,17 +1,22 @@
 FROM python:3.12.12-slim-bookworm
 
-# Instalar dependencias del sistema para Fortran y LaTeX
-RUN apt-get update && apt-get install -y \
-    gfortran \
-    texlive-latex-extra \
-    texlive-lang-spanish \
-    biber \
-    latexmk \
-    && rm -rf /var/lib/apt/lists/*
+# Crear un usuario no privilegiado (coincidiendo con devcontainer)
+RUN useradd -m -u 1000 vscode
 
 WORKDIR /app
-ENV PYTHONPATH=/app/modern/src:${PYTHONPATH}
+# Establecer PYTHONPATH sin referencia circular vacía
+ENV PYTHONPATH=/app/modern/src
+# Seguridad Defensiva: Añadir binarios de usuario al FINAL del PATH.
+# Esto evita el "PATH Hijacking": los comandos del sistema siempre tienen prioridad.
+ENV PATH="${PATH}:/home/vscode/.local/bin"
+
 COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
-COPY . .
+# Usar caché de pip para acelerar reconstrucciones
+RUN --mount=type=cache,target=/root/.cache/pip \
+    pip install -r requirements.txt
+COPY --chown=vscode:vscode . .
+
+# Cambiar al usuario no privilegiado
+USER vscode
+
 CMD ["python", "modern/app.py"]

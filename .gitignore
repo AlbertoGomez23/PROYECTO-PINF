@@ -23,8 +23,8 @@ vendor/
 *.out
 *.exe
 
-# Archivo nasa
-.bsp
+# Python bytecode
+*.pyc
 
 # --- Ignorar archivos de sistema ---
 Thumbs.db

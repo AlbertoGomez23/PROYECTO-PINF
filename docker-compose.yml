@@ -2,22 +2,14 @@ version: '3.8'
 
 services:
   app:
-    # Construir la imagen usando el Dockerfile de la carpeta actual
-    build: . 
+    build: .
+    container_name: almanaque_nautico_roa
     
-    # NOMBRE DEL CONTENEDOR (Para identificarlo fácil)
-    container_name: mi_dev_env
-
-    # VOLÚMENES (La parte crítica)
-    # Mapea la carpeta actual (.) a (/app) dentro del contenedor.
-    # Cualquier cambio que hagas en tu editor se refleja dentro inmediatamente.
     volumes:
       - .:/app
-      # Evita que la carpeta node_modules o venv local sobrescriba la del contenedor
-      # - /app/node_modules 
+      # Evitar que entornos virtuales locales contaminen el contenedor
+      - /app/.venv
+      - /app/venv
 
-    # COMANDO
-    # Mantiene el contenedor encendido para desarrollo (sleep infinity)
-    # ya que app.py es un script que termina inmediatamente.
     command: sleep infinity
     # Para ejecutar la app: python modern/app.py

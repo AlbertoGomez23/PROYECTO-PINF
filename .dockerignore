@@ -3,4 +3,9 @@ __pycache__
 venv/
 .venv/
 .git
-.env   
+.env
+# Código legado (Fortran) no necesario en producción
+legacy/
+# Git LFS y objetos grandes de git
+.git/lfs/
+.git/objects/
