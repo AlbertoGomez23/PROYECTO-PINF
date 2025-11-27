@@ -3,6 +3,7 @@ version: '3.8'
 services:
   app:
     build: .
+    image: almanaque_nautico_roa
     container_name: almanaque_nautico_roa
     
     volumes:
