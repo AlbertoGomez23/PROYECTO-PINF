@@ -38,7 +38,7 @@ except ImportError as e:
     raise ImportError(f"Error importando módulos desde '{ruta_base}': {e}")
 
 
-def SemiDiametroSol():
+def SemiDiametroSol(ano, dT):
     """
     CABECERA:       SemiDiametroSol()
     DESCRIPCIÓN:    Calcula el semidiámetro angular del Sol día a día y genera un 
@@ -68,14 +68,6 @@ def SemiDiametroSol():
     c04 = "    "
     c004 = "    "
 
-    # -------------------------------------------------------------
-    # 1. Entrada de datos (Interacción con usuario)
-    # -------------------------------------------------------------
-    print("Introduzca año a calcular:")
-    ano = int(input().strip())
-
-    print("Introduzca dT = TT - UT (en segundos):")
-    dT = float(input().strip())
     dT = dT / 86400.0   # Conversión de segundos a días
 
     can = f"{ano:04d}"  # Año formateado como string (ej. "2024")
@@ -192,4 +184,4 @@ def SemiDiametroSol():
 
 # --- PUNTO DE ENTRADA ---
 if __name__ == "__main__":
-    SemiDiametroSol()
+    SemiDiametroSol(2012, 69.184)  # Ejemplo de llamada a la función
