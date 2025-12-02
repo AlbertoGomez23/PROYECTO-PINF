@@ -1,20 +1,84 @@
-# macOS
+# --- OS ---
 .DS_Store
+Thumbs.db
 
-# Entornos virtuales
-venv
-.venv
+# --- Python ---
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+dist/
+build/
+eggs/
+parts/
+var/
+sdist/
+develop-eggs/
+.installed.cfg
+lib/
+lib64/
+manifest
 
-# VS Code
+# --- Virtual Environments ---
+venv/
+.venv/
+env/
+ENV/
+
+# --- Testing & Quality ---
+.pytest_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+.tox/
+.nox/
+
+# --- Jupyter ---
+.ipynb_checkpoints
+
+# --- Dependencies ---
+node_modules/
+vendor/
+
+# --- Environment Variables ---
+.env
+.env.local
+.env.*.local
+.envrc
+
+# --- Logs & Temp ---
+*.log
+*.tmp
+*.swp
+*.bak
+*.~*
+
+# --- IDEs ---
+.idea/
 .vscode/
+*.swp
+*.swo
+*.sublime-project
+*.sublime-workspace
+*.project
+*.classpath
+*.settings/
 
-# Archivos de compilación C++
-*.o
-*.out
-*.exe
+# --- Project Specific ---
+# Generated data (anchored to root)
+/data/
 
-# Archivo nasa
-.bsp
-
-# Python
-__pycache__
+# Archives
+*.7z
+*.dmg
+*.gz
+*.iso
+*.jar
+*.rar
+*.tar
+*.zip
+*.tgz
+*.bz2
+*.xz

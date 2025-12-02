@@ -1,2 +1,6 @@
-Modern/Comun/de400.bsp filter=lfs diff=lfs merge=lfs -text
-Modern/Comun/de440.bsp filter=lfs diff=lfs merge=lfs -text
+# Normalización de finales de línea (Crucial para Docker/Linux)
+* text=auto eol=lf
+
+# Git LFS para archivos binarios grandes
+*.bsp filter=lfs diff=lfs merge=lfs -text
+modern/src/data/de440.bsp filter=lfs diff=lfs merge=lfs -text

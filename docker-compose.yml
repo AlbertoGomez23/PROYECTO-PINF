@@ -1,0 +1,14 @@
+services:
+  app:
+    build: .
+    image: almanaque_nautico_roa
+    container_name: almanaque_nautico_roa
+    
+    volumes:
+      - .:/app
+      # Evitar que entornos virtuales locales contaminen el contenedor
+      - /app/.venv
+      - /app/venv
+
+    command: sleep infinity
+    # Para ejecutar la app: python modern/app.py

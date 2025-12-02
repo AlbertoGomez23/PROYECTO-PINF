@@ -1,18 +1,26 @@
-# PROYECTO-PINF
+# Almanaque Nautico ROA (almanaque_nautico_roa)
 
-Proyecto científico/técnico para procesamiento numérico y generación de datos.
+Proyecto científico/técnico para procesamiento numérico y generación del Almanaque Náutico.
 
-## Componentes
+## 🚀 Inicio Rápido con Docker
 
-- **Modern**: Código migrado (implementaciones modernas).
-- **Legacy**: Código Fortran histórico.
-- **Data**: Archivos `.dat` generados por Modern.
-- **Docs**: Documentación y guías de uso.
-- **Tests**: Pruebas unitarias e integración.
+Este proyecto está contenerizado para garantizar un entorno de desarrollo reproducible.
 
-## Contribuir
+1. **Requisitos:** Docker y VS Code con la extensión "Dev Containers".
+2. **Abrir:** Abre la carpeta en VS Code.
+3. **Ejecutar:** Cuando se te solicite, haz clic en "Reopen in Container" o usa la paleta de comandos (`F1` o `Ctrl+Shift+P`) y selecciona **Dev Containers: Reopen in Container**.
+4. **Uso:** Ejemplo de cómo ejecutar la aplicación principal:
 
-Sigue las pautas en Docs/ antes de enviar PRs o issues.
+    ```bash
+    # Ejecutar la aplicación principal para el año 2026
+    python modern/app.py --year 2026
+    ```
+
+## 📂 Estructura
+
+- **modern/**: Código fuente Python actual (src, tests).
+- **legacy/**: Código Fortran histórico (referencia).
+- **data/**: Salida de datos generados.
 
 ## Licencia
 
