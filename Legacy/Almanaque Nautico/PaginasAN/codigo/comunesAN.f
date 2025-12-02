@@ -1,7 +1,7 @@
 C-----7---------------------------------------------------------------72-
 c      necesaria en:
-c      ¥ pagEntera.f:PAGINASPARYNON (Cambiada por DIAJUL)
-c      ¥ pruebas.f
+c      ï¿½ pagEntera.f:PAGINASPARYNON (Cambiada por DIAJUL)
+c      ï¿½ pruebas.f
 
       FUNCTION TJM1(giorno,mese,anno,ora)
         IMPLICIT NONE
@@ -15,7 +15,7 @@ c      ¥ pruebas.f
           im = mese
         END IF
         IF(anno.GT.1582)THEN
-c      le quitamos los mœltiplos de 100 que no lo sean de 400
+c      le quitamos los mï¿½ltiplos de 100 que no lo sean de 400
           ib = iy/400 - iy/100
         ELSE
           ib = -2
@@ -47,7 +47,7 @@ c      le quitamos los mœltiplos de 100 que no lo sean de 400
           im = mese
         END IF
         IF(anno.GT.1582)THEN
-c      le quitamos los mœltiplos de 100 que no lo sean de 400
+c      le quitamos los mï¿½ltiplos de 100 que no lo sean de 400
           ib = iy/400 - iy/100
         ELSE
           ib = -2
@@ -101,7 +101,7 @@ c      le quitamos los mœltiplos de 100 que no lo sean de 400
       END
 
 
-C  Subrutina corregida según Hilton, Astronomica Journal: 129, June 2005 
+C  Subrutina corregida segï¿½n Hilton, Astronomica Journal: 129, June 2005 
       SUBROUTINE MAGNIT(tt,mag)
         IMPLICIT NONE
         LOGICAL yy
@@ -109,7 +109,7 @@ C  Subrutina corregida según Hilton, Astronomica Journal: 129, June 2005
         REAL*8 tt, mag(4), tdb, TDBTDT, xh, yh, zh, dh, de, x, y, z, d
         REAL*8 rr(6), ct, as, ds, a0, d0, se, hp, TOCENT, in
         REAL*8 cpi
-        COMMON /ctePI/ cpi ! ¹
+        COMMON /ctePI/ cpi ! ï¿½
         REAL*8 gr2r
         COMMON /grad2rad/ gr2r ! pasa de grados a radianes
         j = 11 ! sol
@@ -132,7 +132,7 @@ C  Subrutina corregida según Hilton, Astronomica Journal: 129, June 2005
         in = ACOS( (d*d + hp*hp - dh*dh)/(2.*d*hp) )
         in = (in/gr2r)*0.016D+00 - 1.52D+00
         mag(2) = 5.D+00*LOG10(d*hp) + in
-        j = 5 ! Jœpiter
+        j = 5 ! Jï¿½piter
         CALL APARENTE(j,tt,x,y,z,d,de)
         hp = SQRT( (x - xh)**2 + (y - yh)**2 + (z - zh)**2 )
         in = ACOS( (d*d + hp*hp - dh*dh)/(2.*d*hp) )
@@ -144,7 +144,7 @@ C  Subrutina corregida según Hilton, Astronomica Journal: 129, June 2005
         ct = TOCENT(tdb) ! intervalo en centurias desde J2000
         as = ATAN2(rr(1),rr(2))
         ds = ASIN(rr(3)/SQRT(rr(1)**2 + rr(2)**2 + rr(3)**2))
-        CALL PRECES(ct,as,ds) ! s—lo precesi—n
+        CALL PRECES(ct,as,ds) ! sï¿½lo precesiï¿½n
         a0 = (40.589 - 0.036*ct)*gr2r ! IAU WG 2001
         d0 = (83.537 - 0.004*ct)*gr2r
         CALL PRECES(ct,a0,d0)
@@ -166,7 +166,7 @@ C       PAG 105 EXPLANATORY
         IMPLICIT NONE
         REAL*8 t, a0, d0, set, z, the, d, a, cd0, cd, sd0, sd, ca
         REAL*8 dpi
-        COMMON /dospi/ dpi ! ¹
+        COMMON /dospi/ dpi ! ï¿½
         REAL*8 sa2r
         COMMON /segArc2r/ sa2r ! pasa de segundos de arco a radianes
         set = sa2r*t*(2306.2181 + t*(0.30188 + 0.017998*t))
