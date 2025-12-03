@@ -10,5 +10,8 @@ services:
       - /app/.venv
       - /app/venv
 
+    ports:
+      - "8501:8501"
+
     command: sleep infinity
     # Para ejecutar la app: python modern/app.py
