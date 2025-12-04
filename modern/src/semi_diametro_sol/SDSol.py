@@ -122,7 +122,7 @@ def SemiDiametroSol(ano, dT):
     # Escribir cabecera de la tabla (Enero)
     # Nota: \Minp es presumiblemente una macro LaTeX definida en el documento maestro
     f.write(
-        f" Ene.& 1&          \\\\\n"
+        f" Ene.& 1&           \\\\\n"
         f"     &  &${c004[0]}${c004[1]}\\Minp {c004[3]}\\\\\n"
     )
 
@@ -169,7 +169,7 @@ def SemiDiametroSol(ano, dT):
 
             # Escribir fila LaTeX: Mes & Día & Valor formateado
             f.write(
-                f" {fun.MesNom(mes)}& {dia}&          \\\\\n"
+                f" {fun.MesNom(mes)}&{dia:2d}&           \\\\\n"
                 f"     &  &${c004[0]}${c004[1]}\\Minp {c004[3]}\\\\\n"
             )
 
@@ -177,7 +177,7 @@ def SemiDiametroSol(ano, dT):
     # 5. Cierre
     # -------------------------------------------------------------
     # Escribir línea final obligatoria (31 de Diciembre)
-    f.write(" Dic.&31&          \\\\\n")
+    f.write(" Dic.&31&           \\\\\n")
 
     f.close()
     print(f"Archivo generado: {filename}")
