@@ -26,6 +26,7 @@ from utils.funciones import DiaJul, DJADia
 from ortoocasoluna import fenoluna, retardo_lunar_R
 from skyfield.searchlib import find_discrete
 from ortoocasol import fenosol
+from magnit import magnit
 
 """""
 Por último, importamos la carpeta padre en el sys.path
@@ -517,17 +518,16 @@ def UNAPAG(da, annio, dt):
         h_ari, m_ari = HOMI(pmg_ari)
         f23.write(f"PMG Aries : {h_ari:2d} {m_ari:4.1f}\n")
 
-        cuerpos_orden  = ['ven', 'mar', 'jup', 'sat']
+        cuerpos_orden  = ['venus', 'marte', 'jupiter', 'saturno']
         for k in cuerpos_orden: 
             h, m = HOMIEN(Paso_Mer(jd, k, dt))
-            # CORRECCIÓN: Llamamos a Mag_visual en lugar de MAGNIT_Skyfield
-            mag = Mag_visual(jd + 0.5, k)
-            if mag > 0:
+            mag = magnit(jd+0.5)
+            if mag[k] > 0:
                 sig = '+'
             else:
                 sig = '-'
 
-            f23.write(f"PMG : {h:2d} {m:2d}\nMag. : {sig}{abs(mag):4.1f}\n")
+            f23.write(f"PMG : {h:2d} {m:2d}\nMag. : {sig}{abs(mag[k]):4.1f}\n")
 
         #introducimos los planetas en el rango de 24 horas
         for i in range(25):
