@@ -5,7 +5,6 @@ from pathlib import Path
 
 
 #importamos las funciones necesarias de este mismo módulo
-from faseLuna  import FasesDeLaLunaDatos
 from pagEntera import UNAPAG
 
 
@@ -28,8 +27,30 @@ lista de strings
 if str(ruta_Padre) not in sys.path:
     sys.path.append(str(ruta_Padre))
 
-from utils.funciones import DiaJul
-from fase_luna.faseLuna import FasesDeLaLunaDatos
+# =============================================================================
+# CONFIGURACIÓN DE RUTAS E IMPORTACIONES
+# =============================================================================
+# Este bloque asegura que Python pueda encontrar los módulos propios del proyecto
+# aunque el script se ejecute desde una carpeta distinta.
+try:
+    ruta_base = Path(__file__).resolve().parent.parent
+except NameError:
+    ruta_base = Path.cwd().parent
+
+ruta_str = str(ruta_base)
+if ruta_str not in sys.path:
+    sys.path.append(ruta_str)
+
+try:
+    # Importación de librerías astronómicas propias (dependencias externas)
+    # fun: utilidades de fecha (Conversión Gregoriano <-> Juliano)
+    # _ts: escala de tiempo para posiciones planetarias
+    from utils import funciones 
+    from fase_luna import faseLuna
+except ImportError as e:
+    # Si faltan las librerías, el programa fallará al llamar a las funciones de cálculo,
+    # pero permite cargar el script para revisión de código.
+    pass
 
 """""
 Cabecera: IDIAAN(dia: int, mes: int, anio: int) -> int
@@ -75,7 +96,7 @@ def generarFichero():
 
 
     #obtenemos la ruta de los datos
-    ruta_datos = ruta_Padre.parent.parent / "data"
+    ruta_datos = ruta_Padre.parent.parent / "data" / "almanaque_nautico"
 
     """""
     leemos el fichero PAG.DAT, en el cual es el que se escribe una página entera,
@@ -84,7 +105,6 @@ def generarFichero():
     leer este fichero "intermedio", y cuando "paginaEntera" haga su función, copiamos
     los datos obtenidos en el fichero final en el que se encontrarán las 366 páginas
     """""
-    PagDat = ruta_datos / "PAG.DAT"
 
     #iniciamos un cronometro
     iniCrono = time.perf_counter()
@@ -100,12 +120,16 @@ def generarFichero():
                 print("Error: Año y dt deben ser números enteros.\n")
                 return
 
+            ruta_final = ruta_datos / str(anio)
+
+            PagDat = ruta_final / "PAG.DAT"
+
             #calculamos el .dat de fases de la luna
-            FasesDeLaLunaDatos(anio, dt)
+            faseLuna.FasesDeLaLunaDatos(anio, dt)
 
             #preparamos el fichero final
             canio = f"{anio:04d}"   #ponemos el año en formato de 4 dígitos
-            ComDat = ruta_datos / f"AN{canio}COM.DAT"
+            ComDat = ruta_final / f"AN{canio}COM.DAT"
 
             #abrimos el archivo
             try:
@@ -156,7 +180,7 @@ def generarFichero():
                 return
 
             #calculamos el .dat de fases de la luna
-            FasesDeLaLunaDatos(anio, dt)
+            faseLuna.FasesDeLaLunaDatos(anio, dt)
 
             #obtenemos el dia del año concreto
             diaAnio = IDIAAN(dia,mes,anio)
@@ -180,7 +204,7 @@ def generarFichero():
                 return
 
             #calculamos el .dat de fases de la luna
-            FasesDeLaLunaDatos(anio, dt)
+            faseLuna.FasesDeLaLunaDatos(anio, dt)
 
             #obtenemos el dia del año concreto de la fecha inicial
             diaAnIni = IDIAAN(diaIni, mesIni, anioIni)
@@ -196,3 +220,6 @@ def generarFichero():
 
     print(f"\nProceso completado.\n")
     print(f"Tiempo en minutos = {tiempoTotal / 60.0:.4f}")
+
+if __name__ == "__main__":
+    generarFichero()

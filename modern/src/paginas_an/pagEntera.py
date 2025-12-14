@@ -18,12 +18,37 @@ ruta_Padre = ruta_paginas_an.parent
 #obtenemos la ruta de DE440
 ruta_DE440 = ruta_Padre / 'data' / 'de440.bsp'
 
-ruta_data = ruta_padre.parent.parent
+ruta_data = ruta_Padre.parent.parent
+
+# =============================================================================
+# CONFIGURACIÓN DE RUTAS E IMPORTACIONES
+# =============================================================================
+# Este bloque asegura que Python pueda encontrar los módulos propios del proyecto
+# aunque el script se ejecute desde una carpeta distinta.
+try:
+    ruta_base = Path(__file__).resolve().parent.parent
+except NameError:
+    ruta_base = Path.cwd().parent
+
+ruta_str = str(ruta_base)
+if ruta_str not in sys.path:
+    sys.path.append(ruta_str)
+
+try:
+    # Importación de librerías astronómicas propias (dependencias externas)
+    # fun: utilidades de fecha (Conversión Gregoriano <-> Juliano)
+    # _ts: escala de tiempo para posiciones planetarias
+    from utils import funciones 
+except ImportError as e:
+    # Si faltan las librerías, el programa fallará al llamar a las funciones de cálculo,
+    # pero permite cargar el script para revisión de código.
+    pass
+
 
 #importamos todas las funciones necesarias
 from subAN import *
 from constants import *
-from utils.funciones import DiaJul, DJADia
+#from modern.src.utils.funciones import DiaJul, DJADia
 from ortoocasoluna import fenoluna, retardo_lunar_R
 from skyfield.searchlib import find_discrete
 from ortoocasol import fenosol
@@ -53,7 +78,7 @@ tierra = eph['earth']
 #creamos un diccionario con el resto de planetas
 plan_dic ={
     'ven': eph['venus'],
-    'mar': eph['mars'],
+    'mar': eph['mars barycenter'],
     'jup': eph['jupiter barycenter'],
     'sat': eph['saturn barycenter'],
     'ari': None     #Aries es un punto ficticio
@@ -201,7 +226,7 @@ def formato_signo_grado_minuto(grad, err=0.05):
     """""
 def cal_coord_ap(cuerpo, t):
 
-    if cuerpo == 'aries':
+    if cuerpo == 'aries' or cuerpo == 'ari':
         gha  = (t.gast * 15.0) %360.0
         dec = 0.0
         dist = 0.0
@@ -211,11 +236,18 @@ def cal_coord_ap(cuerpo, t):
         con '.observe(cuerpo)', establecemos el objetivo.
         """""
         if isinstance(cuerpo, str):
-            cuerpo = plan_dic.get(cuerpo)
-            if cuerpo is None: # Si no está en el diccionario, chequeamos sol/luna
-                if cuerpo == 'sol': cuerpo = sol
-                if cuerpo == 'lun': cuerpo = luna
-        astronomic = earth.at(t).observe(cuerpo)
+            # Guardamos el nombre original en una variable temporal
+            nombre_original = cuerpo
+            
+            # Intentamos buscar en el diccionario
+            cuerpo = plan_dic.get(nombre_original)
+            
+            if cuerpo is None: # Si no está en el diccionario...
+                # Usamos nombre_original para comprobar si es sol o luna
+                if nombre_original == 'sol': cuerpo = sol
+                elif nombre_original == 'lun': cuerpo = luna
+        
+        astronomic = tierra.at(t).observe(cuerpo)
 
         """""
         con '.apparent()', calculamos la posición real aplicando automáticamente
@@ -233,7 +265,7 @@ def cal_coord_ap(cuerpo, t):
         dec  = dec_obj.degrees
         dist = distancia.au
 
-        return gha, dec, dist
+    return gha, dec, dist
 
 
 """""
@@ -284,9 +316,9 @@ def Paso_Mer(jdInicio, cuerpo, dt):
     #definimos la función de cruce
     def meridian_condition(t):
         gha, _, _ = cal_coord_ap(cuerpo, t)
-        #como queremos que cruce por 0/360, normalizamos a -180...180 para detectar el salto
-        if gha > 180:
-            gha -= 360
+        
+        #donde gha sea mayor a 180, le restamos 360, sino, se mantiene igual
+        gha = np.where(gha > 180, gha - 360, gha)
         
         return gha < 0      #devuelve True si es negativo (antes del cruce), o False (después)
 
@@ -316,7 +348,7 @@ def Mag_visual(jd_tt, cuerpo):
             return -99.9
         else:
 
-            obs = earth.at(t).observe(objetivo)
+            obs = tierra.at(t).observe(objetivo)
             try:
                 mag = planetary_magnitude(obs)      #calculamos la magnitud
                 return float(mag)
@@ -338,13 +370,13 @@ LaTeX.
 def UNAPAG(da, annio, dt):
     print(f"Generando Almanaque para el día {da} de {annio} (Delta: {dt})...")
 
-    jd0_annio = DiaJul(1,1,annio,0.0)
+    jd0_annio = funciones.DiaJul(1,1,annio,0.0)
     jd  = jd0_annio + (da-1)
 
     can = f"{annio:04d}"
 
     #obtenemos los datos para la cabecera
-    dia, mes, anomas, _ = DJADia(jd)
+    dia, mes, anomas, _ = funciones.DJADia(jd)
     nombre_mes = MesANom(mes)
     nombre_dia_sem = num_a_dia[DiaSem(jd)]
 
@@ -447,85 +479,144 @@ def UNAPAG(da, annio, dt):
         hgg_prev = 0
         deg_prev = 0
 
-        #creamos un bucle que recorra cada hora (0-24h)
+        # Definimos las latitudes tal cual estaban en el Fortran original (DATA nlat/clat)para
+        # asegurar que la fila 0 sea 60N, la fila 1 sea 58N, etc.
+        LAT_VALS = [60, 58, 56, 54, 52, 50, 45, 40, 35, 30, 20, 10, 0,
+                -10, -20, -30, -35, -40, -45, -50, -52, -54, -56, -58, -60]
+        
+        LAT_STRS = ['60 N', '58  ', '56  ', '54  ', '52  ', '50  ',
+                    '45  ', '40  ', '35  ', '30  ', '20  ', '10 N',
+                    ' 0  ', '10 S', '20  ', '30  ', '35  ', '40  ',
+                    '45  ', '50  ', '52  ', '54  ', '56  ', '58  ',
+                    '60 S']
+
+        # Creamos variables de estado para la interpolación 
+        prev_gha_lun_float = None
+        prev_dec_lun_float = None
+        CONST_MOV_MEDIO_LUNA_MIN = 859.0 
+
+        # Bucle de las 25 horas (0 a 24)
         for i in range(25):
-            ut = jd + i/24.0
-            t_rot = ts.ut1_jd(ut)       #rotación terrestre
+            # Definir el instante t usando Skyfield
+            t = ts.tt_jd(jd + i/24.0)
+
+            # --- CÁLCULOS SOL ---
+            ast_sol = tierra.at(t).observe(sol).apparent()
+            ra_sol, dec_sol, _ = ast_sol.radec(epoch='date')
             
-            #obtenemos los datos del Sol
-            gha_sol_deg, dec_sol, _ = cal_coord_ap('sol', t_rot)
-            hgg[0], hgm[0] = formato_grado_minuto(gha_sol_deg, err)
-            sgn[0], deg[0], dem[0] = formato_signo_grado_minuto(dec_sol, err)
+            gh_sol_deg = (t.gast * 15.0 - ra_sol.hours * 15.0) % 360.0
+            dec_sol_deg = dec_sol.degrees
 
-            #obtenemos los datos de la Luna
-            gha_lun_deg, dec_lun, _ = cal_coord_ap('lun', t_rot)
-            hgg[1], hgm[1] = formato_grado_minuto(gha_lun_deg, err)
-            sgn[1], deg[1], dem[1] = formato_signo_grado_minuto(dec_lun, err)
+            # --- CÁLCULOS LUNA ---
+            ast_lun = tierra.at(t).observe(luna).apparent()
+            ra_lun, dec_lun, _ = ast_lun.radec(epoch='date')
+            
+            gh_lun_deg = (t.gast * 15.0 - ra_lun.hours * 15.0) % 360.0
+            dec_lun_deg = dec_lun.degrees
 
-            #convertimos a decimas de minuto
-            ang_hor_luna = int(round(hgm[1] * 10.0))
-            decl_luna = int(round(dem[1] * 10.0))
+            hgg_sol, hgm_sol = formato_grado_minuto(gh_sol_deg, 0.05) 
+            sgn_sol, deg_sol, dem_sol = formato_signo_grado_minuto(dec_sol_deg, 0.05)
 
-            if i > 0:
-                diff_val = ang_hor_luna - hgg_prev
-                if diff_val < -10000:
-                    diff_val += 216000
-                ret_dif[3] = diff_val - 8590
-                ret_dif[4] = abs(decl_luna - deg_prev)
+            hgg_lun, hgm_lun = formato_grado_minuto(gh_lun_deg, 0.05)
+            sgn_lun, deg_lun, dem_lun = formato_signo_grado_minuto(dec_lun_deg, 0.05)
 
-            hgg_prev = ang_hor_luna
-            deg_prev = decl_luna
+            # --- LÓGICA DE INTERPOLACIÓN 'v' y 'd' ---
+            str_v = ""
+            str_d = ""
 
-            #pasamos a los fenómenos
-            lat_actual = LATITUDES_VAL[i]
-            if pn == 0:
-                h = [fenosol(jd, lat_actual, k) for k in['pcn','pcc','ort']]
+            if prev_gha_lun_float is not None:
+                # Cálculo de 'v'
+                diff_gha = gh_lun_deg - prev_gha_lun_float
+                if diff_gha < -180.0: diff_gha += 360.0 # Corrección salto día
+                
+                diff_mins = diff_gha * 60.0
+                v_float = (diff_mins - CONST_MOV_MEDIO_LUNA_MIN) * 10.0
+                v_final = int(round(v_float))
+                str_v = f"{v_final:+d}" # Formato con signo
+
+                # Cálculo de 'd'
+                diff_dec = abs(dec_lun_deg - prev_dec_lun_float)
+                d_float = diff_dec * 60.0 * 10.0
+                d_final = int(round(d_float))
+                str_d = f"{d_final:d}"
+
+            # Guardar valores actuales para la siguiente vuelta
+            prev_gha_lun_float = gh_lun_deg
+            prev_dec_lun_float = dec_lun_deg
+
+            # --- FENÓMENOS ---
+            # Latitud correspondiente a esta hora (fila)
+            lat_act_val = LAT_VALS[i]
+            lat_act_str = LAT_STRS[i]
+
+            # Determinamos si es página par (0) o impar (1)
+            pn = (da + 1) % 2 
+            
+            if pn == 0: # Página par
+                eventos_sol = ['pcn', 'pcc', 'ort']
+            else:       # Página impar
+                eventos_sol = ['oca', 'fcc', 'fcn']
+
+            # Calculamos horas sol
+            vals_sol = []
+            for evt in eventos_sol:
+                hora_raw = fenosol(jd, lat_act_val, evt) 
+                h_entera, m_entera = HOMIEN(hora_raw)    
+                vals_sol.extend([h_entera, m_entera])
+
+            # Calculamos horas luna (Salida/Puesta y Retardos)
+            vals_lun = []
+            for evt in ['ort', 'oca']:
+                hora_raw = fenoluna(jd, lat_act_val, evt) 
+                h_entera, m_entera = HOMIEN(hora_raw)
+                
+                # Retardo, si devuelve None, ponemos 9999 
+                ret_val = retardo_lunar_R(jd, lat_act_val, evt) 
+                if ret_val is None: ret_val = 9999
+                
+                vals_lun.extend([h_entera, m_entera, int(ret_val)])
+
+            # --- ESCRITURA DE LA LÍNEA ---
+            # Preparamos los strings de datos
+            s_sol = f"{hgg_sol:3d} {hgm_sol:4.1f} {sgn_sol} {deg_sol:2d} {dem_sol:4.1f}"
+            s_lun = f"{hgg_lun:3d} {hgm_lun:4.1f}" 
+            s_lun_dec = f"{sgn_lun} {deg_lun:2d} {dem_lun:4.1f}"
+            
+            # 6 columnas para el sol (h m h m h m)
+            s_fen_sol = f"{vals_sol[0]:2d} {vals_sol[1]:2d}  {vals_sol[2]:2d} {vals_sol[3]:2d}  {vals_sol[4]:2d} {vals_sol[5]:2d}"
+            
+            # 3 bloques para la luna (h m ret) x 2
+            s_fen_lun = f"{vals_lun[0]:2d} {vals_lun[1]:2d} {vals_lun[2]:3d}  {vals_lun[3]:2d} {vals_lun[4]:2d} {vals_lun[5]:3d}"
+
+            # Escribimos en el fichero (f23 es tu handle de archivo)
+            if i == 0:
+                # Hora 0: Sin v ni d
+                linea = f"&{i:2d}  {s_sol}  {s_lun}      {s_lun_dec}      {lat_act_str}  {s_fen_sol}  {s_fen_lun}"
             else:
-                h = [fenosol(jd, lat_actual, k) for k in ['oca', 'fcc', 'fcn']]
-
-            for k in range(3):
-                org[k], orm[k]  = HOMIEN(h[k])
-
-            h_lun = [fenoluna(jd, lat_actual, k) for k in ['ort', 'oca']]
+                # Hora > 0: Con v y d interpolados
+                linea = f"&{i:2d}  {s_sol}  {s_lun} {str_v:>3} {s_lun_dec} {str_d:>3}  {lat_act_str}  {s_fen_sol}  {s_fen_lun}"
             
-            for k in range(2):
-                org[3+k], orm[3+k] = HOMIEN(h_lun[k])
-
-            #ponemos or 9999, en caso de que devuelva None el retardo_lunar_R, indicando que se deje un espacio en blanco
-            r_vals = [retardo_lunar_R(jd, lat_actual, k) or 9999 for k in ['ort','oca']]
-
-            #escribimos en el fichero
-            lat_str = LATITUDES_STR[i]
-            s_sol = f"{hgg[0]:3d} {hgm[0]:4.1f} {sgn[0]} {deg[0]:2d} {dem[0]:4.1f}"
-            s_lun = f"{hgg[1]:3d} {hgm[1]:4.1f} {sgn[1]} {deg[1]:2d} {dem[1]:4.1f}"
-
-            s_lun_base = f"{hgg[1]:3d} {hgm[1]:4.1f}"
-            s_lun_dec = f"{sgn[1]} {deg[1]:2d} {dem[1]:4.1f}"
-
-            s_fen = f"{org[0]:2d} {orm[0]:2d}  {org[1]:2d} {orm[1]:2d}  {org[2]:2d} {orm[2]:2d}"
-            s_fen_l = f"{org[3]:2d} {orm[3]:2d} {r_vals[0]:3d}  {org[4]:2d} {orm[4]:2d} {r_vals[1]:3d}"
-
-            if i == 0:      #si la página es par
-                linea = f"&{i:2d}  {s_sol}  {s_lun_base}     {s_lun_dec}     {lat_str}  {s_fen}  {s_fen_l}"
-            else:       #página impar
-                linea = f"&{i:2d}  {s_sol}  {s_lun_base} {ret_dif[3]:3d} {s_lun_dec} {ret_dif[4]:3d}  {lat_str}  {s_fen}  {s_fen_l}"
             f23.write(linea + "\n")
+
 
         #pie de página
         pmg_ari = Paso_Mer(jd, 'ari', dt)
         h_ari, m_ari = HOMI(pmg_ari)
         f23.write(f"PMG Aries : {h_ari:2d} {m_ari:4.1f}\n")
 
-        cuerpos_orden  = ['venus', 'marte', 'jupiter', 'saturno']
+        cuerpos_orden  = ['ven', 'mar', 'jup', 'sat']
         for k in cuerpos_orden: 
             h, m = HOMIEN(Paso_Mer(jd, k, dt))
-            mag = magnit(jd+0.5)
-            if mag[k] > 0:
+            
+            #calculamos la magintud para cada cuerpo
+            val_mag = Mag_visual(jd + 0.5, k)
+
+            if val_mag > 0:
                 sig = '+'
             else:
                 sig = '-'
 
-            f23.write(f"PMG : {h:2d} {m:2d}\nMag. : {sig}{abs(mag[k]):4.1f}\n")
+            f23.write(f"PMG : {h:2d} {m:2d}\nMag. : {sig}{abs(val_mag):4.1f}\n")
 
         #introducimos los planetas en el rango de 24 horas
         for i in range(25):
@@ -572,3 +663,6 @@ def UNAPAG(da, annio, dt):
         f23.write(f"\\def\\figlun{{FigLuna{nfl+1:02d}.epsf scaled 120}}\n")
 
     print(f"Fichero generado: {fichero_salida}")
+
+if __name__ == "__main__":
+    UNAPAG(1,2012,69)
