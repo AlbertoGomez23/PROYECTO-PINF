@@ -61,7 +61,7 @@ por el día juliano del 1 de enero del año elegido,
 obteniendo así el número del día que tendría en el año
 """""
 def IDIAAN(dia: int, mes: int, anio: int) -> int:
-    return DiaJul(dia,mes,anio,0) - DiaJul(0,1,anio,0)     
+    return funciones.DiaJul(dia,mes,anio,0) - funciones.DiaJul(0,1,anio,0)     
 
 
 """""
@@ -122,14 +122,14 @@ def generarFichero():
 
             ruta_final = ruta_datos / str(anio)
 
-            PagDat = ruta_final / "PAG.DAT"
+            PagDat = ruta_final / "PAG.dat"
 
             #calculamos el .dat de fases de la luna
             faseLuna.FasesDeLaLunaDatos(anio, dt)
 
             #preparamos el fichero final
             canio = f"{anio:04d}"   #ponemos el año en formato de 4 dígitos
-            ComDat = ruta_final / f"AN{canio}COM.DAT"
+            ComDat = ruta_final / f"AN{canio}COM.dat"
 
             #abrimos el archivo
             try:
@@ -151,7 +151,7 @@ def generarFichero():
                             with open(PagDat, "r", encoding="utf-8") as f_in:
                                 shutil.copyfileobj(f_in,f_out)  #volcamos el fichero PAGDAT en el fichero final
                         except FileNotFoundError:
-                            print(f"Error: UNAPAG no creó el archivo {PagDat}")
+                            print(f"Error: UNAPAG no creó el archivo {PagDat}\n Número de página: {i}")
                             break
                         except IOError as e:
                             print(f"Error leyendo/escribiendo {PagDat}: {e}")
@@ -204,7 +204,7 @@ def generarFichero():
                 return
 
             #calculamos el .dat de fases de la luna
-            faseLuna.FasesDeLaLunaDatos(anio, dt)
+            faseLuna.FasesDeLaLunaDatos(anioIni, dt)
 
             #obtenemos el dia del año concreto de la fecha inicial
             diaAnIni = IDIAAN(diaIni, mesIni, anioIni)
@@ -212,7 +212,7 @@ def generarFichero():
             #vamos generando las páginas del intervalo dado por el usuario
             for i in range(nDias):
                 diaActual = diaAnIni + i
-                UNAPAG(diaActual, anio)     #generamos la página
+                UNAPAG(diaActual, anioIni, dt)     #generamos la página
 
     #mostramos por pantalla el tiempo en minutos que ha tardado el proceso
     finCrono = time.perf_counter()

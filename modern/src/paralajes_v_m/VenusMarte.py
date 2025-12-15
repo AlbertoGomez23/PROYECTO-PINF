@@ -30,9 +30,30 @@ lista de strings
 if str(ruta_Padre) not in sys.path:
     sys.path.append(str(ruta_Padre))
 
-#importamos las funciones que necesitemos
-from utils.funciones import MesNom, DiasMes, Rad2MArc, DiaJul, DJADia, TDBTDT
-from utils.read_de440 import GeoDista
+# =============================================================================
+# CONFIGURACIÓN DE RUTAS E IMPORTACIONES
+# =============================================================================
+# Este bloque asegura que Python pueda encontrar los módulos propios del proyecto
+# aunque el script se ejecute desde una carpeta distinta.
+try:
+    ruta_base = Path(__file__).resolve().parent.parent
+except NameError:
+    ruta_base = Path.cwd().parent
+
+ruta_str = str(ruta_base)
+if ruta_str not in sys.path:
+    sys.path.append(ruta_str)
+
+try:
+    # Importación de librerías astronómicas propias (dependencias externas)
+    # fun: utilidades de fecha (Conversión Gregoriano <-> Juliano)
+    # _ts: escala de tiempo para posiciones planetarias
+    from utils import funciones 
+    from utils import read_de440
+except ImportError as e:
+    # Si faltan las librerías, el programa fallará al llamar a las funciones de cálculo,
+    # pero permite cargar el script para revisión de código.
+    pass
 
 #vamos a crear dos funciones que nos ayudarán a mantener el formato de escritura que realiza el archivo FORTRAN original
 """""
@@ -45,10 +66,10 @@ Esto es debido a que en el formato que lo realiza fortran es de 4 caracteres por
 def valores_A_string(agMarte1, agMarte2, agMarte3, agVenus):
 
     #transformamos los valores a string con el formato de 4 caracteres por número
-    s1 = f"{agMarte1:4.1f}"[-4]
-    s2 = f"{agMarte2:4.1f}"[-4]
-    s3 = f"{agMarte3:4.1f}"[-4]
-    s4 = f"{agVenus:4.1f}"[-4]
+    s1 = f"{agMarte1:4.1f}"[-4:]
+    s2 = f"{agMarte2:4.1f}"[-4:]
+    s3 = f"{agMarte3:4.1f}"[-4:]
+    s4 = f"{agVenus:4.1f}"[-4:]
 
     return s1 + s2 + s3 + s4        #devolvemos una cadena con todos los valores ya pasados a cadena
 
@@ -141,39 +162,39 @@ def calculo_paralaje():
     vamos a buscar el directorio de datos/paralaje, para almacenar ahi el fichero .dat
     Para ello buscaremos las rutas
     """""
-    rurta_carpeta_datos = ruta_Padre / "Datos" / "Paralajes"
+    ruta_carpeta_datos = ruta_Padre.parent.parent / "data" / "almanaque_nautico" / anio_str
 
     ruta_carpeta_datos.mkdir(parents=True, exist_ok=True) #en caso de que no exista la carpeta, la crea, si no sigue
     
     #creamos el fichero .dat
-    archivo_datos = rurta_carpeta_datos / f"AN{anio_str}387.DAT"
+    archivo_datos = ruta_carpeta_datos / f"AN{anio_str}387.dat"
 
     with open(archivo_datos, 'w', encoding='utf8') as archivo_salida:
         
         #convertimos de grados a radianes   
-        AlturaRadianes[0] = math.radians(AlturaGrados[0])
-        AlturaRadianes[1] = math.radians(AlturaGrados[1])
-        AlturaRadianes[2] = math.radians(AlturaGrados[2])
-        AlturaRadianes[3] = math.radians(AlturaGrados[3])
+        AlturasRadianes[0] = math.radians(AlturasGrados[0])
+        AlturasRadianes[1] = math.radians(AlturasGrados[1])
+        AlturasRadianes[2] = math.radians(AlturasGrados[2])
+        AlturasRadianes[3] = math.radians(AlturasGrados[3])
 
         #calculamos el número de días en el año
-        JulianoAnioActual = DiaJul(1,1,anio,0.0)
-        JulianoAnioSiguiente = DiaJul(1,1,anio+1,0.0)
+        JulianoAnioActual = funciones.DiaJul(1,1,anio,0.0)
+        JulianoAnioSiguiente = funciones.DiaJul(1,1,anio+1,0.0)
         diasTotales = int(JulianoAnioSiguiente - JulianoAnioActual + 0.5)
 
-        dJuliano = DiaJul(2,1,anio,0.0)
+        dJuliano = funciones.DiaJul(2,1,anio,0.0)
 
         #calculamos la geodistancia entre de marte y venus
 
-        rMarte = GeoDista(dJuliano, 4)      # 4 corresponde a Marte
-        rVenus = GeoDista(dJuliano, 2)      # 2 corresponde a Venus
+        rMarte = read_de440.GeoDista(dJuliano, 4)      # 4 corresponde a Marte
+        rVenus = read_de440.GeoDista(dJuliano, 2)      # 2 corresponde a Venus
         
 
         #calculamos los valores angulares
-        angMarte1 = Rad2MArc(math.asin(RadioTierra / rMarte * math.cos(AlturaRadianes[0])))
-        angMarte2 = Rad2MArc(math.asin(RadioTierra / rMarte * math.cos(AlturaRadianes[1])))
-        angMarte3 = Rad2MArc(math.asin(RadioTierra / rMarte * math.cos(AlturaRadianes[2])))
-        angVenus = Rad2MArc(math.asin(RadioTierra / rMarte * math.cos(AlturaRadianes[3])))
+        angMarte1 = funciones.Rad2MArc(math.asin(RadioTierra / rMarte * math.cos(AlturasRadianes[0])))
+        angMarte2 = funciones.Rad2MArc(math.asin(RadioTierra / rMarte * math.cos(AlturasRadianes[1])))
+        angMarte3 = funciones.Rad2MArc(math.asin(RadioTierra / rMarte * math.cos(AlturasRadianes[2])))
+        angVenus = funciones.Rad2MArc(math.asin(RadioTierra / rVenus * math.cos(AlturasRadianes[3])))
 
         #formateamos los valores a string para seguir el formato del .dat
         #guardamos los datos del dia anterior para realizar comparaciones
@@ -205,14 +226,14 @@ def calculo_paralaje():
             dJuliano = JulianoAnioActual + dia_del_anio + dT
 
             #recalculamos las geodistancias
-            rMarte = GeoDista(dJuliano, 4)      
-            rVenus = GeoDista(dJuliano, 2) 
+            rMarte = read_de440.GeoDista(dJuliano, 4)      
+            rVenus = read_de440.GeoDista(dJuliano, 2) 
 
             #recalculamos los 4 angulos
-            angMarte1 = Rad2MArc(math.asin(RadioTierra / rMarte * math.cos(AlturaRadianes[0])))
-            angMarte2 = Rad2MArc(math.asin(RadioTierra / rMarte * math.cos(AlturaRadianes[1])))
-            angMarte3 = Rad2MArc(math.asin(RadioTierra / rMarte * math.cos(AlturaRadianes[2])))
-            angVenus = Rad2MArc(math.asin(RadioTierra / rMarte * math.cos(AlturaRadianes[3])))
+            angMarte1 = funciones.Rad2MArc(math.asin(RadioTierra / rMarte * math.cos(AlturasRadianes[0])))
+            angMarte2 = funciones.Rad2MArc(math.asin(RadioTierra / rMarte * math.cos(AlturasRadianes[1])))
+            angMarte3 = funciones.Rad2MArc(math.asin(RadioTierra / rMarte * math.cos(AlturasRadianes[2])))
+            angVenus = funciones.Rad2MArc(math.asin(RadioTierra / rMarte * math.cos(AlturasRadianes[3])))
 
             #guardamos los valores del día actual
             diaActual = valores_A_string(angMarte1,angMarte2,angMarte3,angVenus)
@@ -224,7 +245,7 @@ def calculo_paralaje():
             if diaActual != diaPrevio:
 
                 #convertimos el Día juliano anterior a fecha legible
-                dia, mes, anioCalculado, hora = DJADia(dJuliano - 1)
+                dia, mes, anioCalculado, hora = funciones.DJADia(dJuliano - 1)
 
                 #actualizamos el valor de diaPrevio con el valor de diaActual para la siguiente iteración
                 diaPrevio = diaActual
@@ -234,7 +255,7 @@ def calculo_paralaje():
 
                 #escribimos la nueva línea con la información obtenida
                 linea1 =( 
-                    f" {MesNom(mes)}&{dia:2d}&           &           "
+                    f" {funciones.MesNom(mes)}&{dia:2d}&           &           "
                     f"&           &           \\\\"
                 )
 

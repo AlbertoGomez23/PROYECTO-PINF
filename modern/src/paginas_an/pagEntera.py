@@ -48,7 +48,6 @@ except ImportError as e:
 #importamos todas las funciones necesarias
 from subAN import *
 from constants import *
-#from modern.src.utils.funciones import DiaJul, DJADia
 from ortoocasoluna import fenoluna, retardo_lunar_R
 from skyfield.searchlib import find_discrete
 from ortoocasol import fenosol
@@ -663,6 +662,3 @@ def UNAPAG(da, annio, dt):
         f23.write(f"\\def\\figlun{{FigLuna{nfl+1:02d}.epsf scaled 120}}\n")
 
     print(f"Fichero generado: {fichero_salida}")
-
-if __name__ == "__main__":
-    UNAPAG(1,2012,69)
