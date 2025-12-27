@@ -66,10 +66,6 @@ vendor/
 *.classpath
 *.settings/
 
-# --- Project Specific ---
-# Generated data (anchored to root)
-/data/
-
 # Archives
 *.7z
 *.dmg
