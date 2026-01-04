@@ -30,6 +30,13 @@ except ImportError as e:
     print(f"Error importando Polar: {e}")
     POLAR_AVAILABLE = False
 
+try:
+    from src.fase_luna.faseLuna import FasesDeLaLunaLatex
+    LUNA_AVAILABLE = True
+except ImportError as e:
+    print(f"Error importando Fases de la Luna: {e}")
+    LUNA_AVAILABLE = False
+
 # =============================================================================
 # 2. CONFIGURACIÓN DE LA PÁGINA
 # =============================================================================
@@ -116,6 +123,11 @@ with col1:
     if not POLAR_AVAILABLE:
         st.error("Modulo Polar no encontrado en src/")
 
+    # --- Módulo FaseLuna ---
+    run_luna = st.checkbox("Fase de la Luna (Pag 386-389)", value=select_all, disabled=not LUNA_AVAILABLE)
+    if not LUNA_AVAILABLE:
+        st.error("Módulo Fase de la Luna no encontrado en src/")
+
 with col2:
     st.subheader("Generación y Resultados")
     
@@ -158,6 +170,23 @@ with col2:
                     st.write("Polar completado.")
                 except Exception as e:
                     st.error(f"Error en Polar: {e}")
+                    status.update(label="Error en el proceso", state="error")
+                    st.stop()
+            
+            # 3. Ejecutar Fase de la Luna
+            if run_luna and LUNA_AVAILABLE:
+                st.write(f"Calculando Fases de la Luna (Año {year})...")
+                try:
+                    path_fase_luna = FasesDeLaLunaLatex(ano=year,
+                                                        dt=delta_t_val
+                                                        )
+                    
+                    # Evitar duplicar ruta si es la misma
+                    if path_fase_luna not in output_paths:
+                        output_paths.append(path_fase_luna)
+                    st.write("Fases de la Luna completado.")
+                except Exception as e:
+                    st.error(f"Error en Fases de la Luna: {e}")
                     status.update(label="Error en el proceso", state="error")
                     st.stop()
             
