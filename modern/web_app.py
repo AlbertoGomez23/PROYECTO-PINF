@@ -124,7 +124,7 @@ with col1:
         st.error("Modulo Polar no encontrado en src/")
 
     # --- Módulo FaseLuna ---
-    run_luna = st.checkbox("Fase de la Luna (Pag 386-389)", value=select_all, disabled=not LUNA_AVAILABLE)
+    run_luna = st.checkbox("Fase de la Luna", value=select_all, disabled=not LUNA_AVAILABLE)
     if not LUNA_AVAILABLE:
         st.error("Módulo Fase de la Luna no encontrado en src/")
 
@@ -178,7 +178,7 @@ with col2:
                 st.write(f"Calculando Fases de la Luna (Año {year})...")
                 try:
                     path_fase_luna = FasesDeLaLunaLatex(ano=year,
-                                                        dt=delta_t_val
+                                                        valor_delta_t_manual=delta_t_val
                                                         )
                     
                     # Evitar duplicar ruta si es la misma
