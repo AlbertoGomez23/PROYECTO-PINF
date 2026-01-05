@@ -74,7 +74,7 @@ es el cerebro de todo, en el que llama a todas las funciones de este
 para generar las páginas finales con todos los resultados tras realizar
 los distintos cálculos del resto de módulos
 """""
-def generarFichero(anio: int, dt: int, opcion: int = 1):
+def generarFichero(anio: int, dt: float, opcion: int = 1):
     
     #comprobamos la opción elegida por el usuario
     while True:

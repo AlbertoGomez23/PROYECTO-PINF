@@ -121,7 +121,7 @@ fichero "funciones.py", que se encuentra en la carpeta "Comun"
 Postcondición: Crea el fichero .dat en el que se recopilan los datos sobre el paralaje de Venus y Marte en el año y
 con la variable Delta dada por el usuario
 """""
-def calculo_paralaje(anio:int, dT:int):
+def calculo_paralaje(anio:int, dT: float):
 
     dT = float(dT)
     dT = dT/86400.0     #transformamos de segundos a días
