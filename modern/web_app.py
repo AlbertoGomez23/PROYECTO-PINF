@@ -37,6 +37,20 @@ except ImportError as e:
     print(f"Error importando Fases de la Luna: {e}")
     LUNA_AVAILABLE = False
 
+try:
+    from src.paginas_an.fichDatAN import generarFichero
+    FICHERODAT_AVAILABLE = True
+except ImportError as e:
+    print(f"Error importando Datos del año: {e}")
+    FICHERODAT_AVAILABLE = False
+
+try:
+    from src.paralajes_v_m.VenusMarte import calculo_paralaje
+    PARALAJES_AVAILABLE = True
+except ImportError as e:
+    print(f"Error importando Paralajes de Venus y Marte: {e}")
+    PARALAJES_AVAILABLE = False
+
 # =============================================================================
 # 2. CONFIGURACIÓN DE LA PÁGINA
 # =============================================================================
@@ -92,6 +106,9 @@ with st.sidebar:
             max_value=150.0,
             help="Valor en segundos. Rango permitido: 0 - 150"
         )
+    else:
+        from src.utils.read_de440 import get_delta_t
+        delta_t_val = get_delta_t(year)
     
     # Traducir selección para el backend
     tipo_dt_backend = 'manual' if delta_t_type == "Manual" else 'auto'
@@ -124,9 +141,19 @@ with col1:
         st.error("Modulo Polar no encontrado en src/")
 
     # --- Módulo FaseLuna ---
-    run_luna = st.checkbox("Fase de la Luna", value=select_all, disabled=not LUNA_AVAILABLE)
+    run_luna = st.checkbox("Fases de la Luna", value=select_all, disabled=not LUNA_AVAILABLE)
     if not LUNA_AVAILABLE:
         st.error("Módulo Fase de la Luna no encontrado en src/")
+    
+    # --- Módulo Fichero DAT ---
+    run_fichero_dat = st.checkbox("Datos del año", value=select_all, disabled=not FICHERODAT_AVAILABLE)
+    if not FICHERODAT_AVAILABLE:
+        st.error("Datos del año no encontrado en src/")
+
+    # --- Módulo Paralajes Venus y Marte ---
+    run_paralajes = st.checkbox("Paralajes de Venus y Marte", value=select_all, disabled=not PARALAJES_AVAILABLE)
+    if not PARALAJES_AVAILABLE:
+        st.error("Módulo Paralajes de Venus y Marte no encontrado en src/")
 
 with col2:
     st.subheader("Generación y Resultados")
@@ -176,9 +203,6 @@ with col2:
             # 3. Ejecutar Fase de la Luna
             if run_luna and LUNA_AVAILABLE:
                 st.write(f"Calculando Fases de la Luna (Año {year})...")
-                if delta_t_type != "Manual": 
-                    from src.utils.read_de440 import get_delta_t
-                    delta_t_val = get_delta_t(year)
                 try:
                     path_fase_luna = FasesDeLaLunaLatex(ano=year,
                                                         dt_in=delta_t_val
@@ -190,6 +214,40 @@ with col2:
                     st.write("Fases de la Luna completado.")
                 except Exception as e:
                     st.error(f"Error en Fases de la Luna: {e}")
+                    status.update(label="Error en el proceso", state="error")
+                    st.stop()
+            
+            # 4. Ejecutar Fichero DAT
+            if run_fichero_dat and FICHERODAT_AVAILABLE:
+                st.write(f"Generando Datos del año (Año {year})...")
+                try:
+                    path_fichero_dat = generarFichero(
+                        anio=year,
+                        dt=delta_t_val,
+                    )
+                    # Evitar duplicar ruta si es la misma
+                    if path_fichero_dat not in output_paths:
+                        output_paths.append(path_fichero_dat)
+                    st.write("Datos del año completado.")
+                except Exception as e:
+                    st.error(f"Error en Datos del año: {e}")
+                    status.update(label="Error en el proceso", state="error")
+                    st.stop()
+            
+            # 5. Ejecutar Paralajes Venus y Marte
+            if run_paralajes and PARALAJES_AVAILABLE:
+                st.write(f"Calculando Paralajes de Venus y Marte (Año {year})...")
+                try:
+                    path_paralajes = calculo_paralaje(
+                        anio=year,
+                        dT=delta_t_val
+                    )
+                    # Evitar duplicar ruta si es la misma
+                    if path_paralajes not in output_paths:
+                        output_paths.append(path_paralajes)
+                    st.write("Paralajes de Venus y Marte completado.")
+                except Exception as e:
+                    st.error(f"Error en Paralajes de Venus y Marte: {e}")
                     status.update(label="Error en el proceso", state="error")
                     st.stop()
             
