@@ -9,8 +9,15 @@ import math
 from datetime import date
 from typing import cast
 
-from utils import coordena as coordena_moderno
-from utils.coordena import ts
+# Imports compatibles con web_app.py y CLI
+try:
+    # Intento 1: Import relativo (cuando se ejecuta desde web_app.py)
+    from ..utils import coordena as coordena_moderno
+    from ..utils.coordena import ts
+except ImportError:
+    # Intento 2: Import desde src (cuando src está en sys.path)
+    from utils import coordena as coordena_moderno
+    from utils.coordena import ts
 
 # Constantes
 PI = math.pi

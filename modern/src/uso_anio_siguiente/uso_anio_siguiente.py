@@ -13,15 +13,21 @@ from typing import cast
 
 import click
 
-# Imports absolutos estándar (Best Practice)
-from modern.src.uso_anio_siguiente import core, formatter
-from modern.src.utils.coordena import ts
-
 # Asegurar que la raíz del proyecto (/app) está en sys.path para permitir imports absolutos
 # Esto es una buena práctica cuando se ejecutan scripts dentro de una estructura de paquetes
 project_root = Path(__file__).resolve().parent.parent.parent.parent
 if str(project_root) not in sys.path:
     sys.path.append(str(project_root))
+
+# Imports - compatibles con web_app.py y CLI
+try:
+    # Intento 1: Import relativo (cuando se ejecuta desde web_app.py)
+    from ..utils.coordena import ts
+    from . import core, formatter
+except ImportError:
+    # Intento 2: Import absoluto (cuando se ejecuta como script CLI)
+    from modern.src.uso_anio_siguiente import core, formatter
+    from modern.src.utils.coordena import ts
 
 
 def compute_corrections(ano, dt_seconds, base_dir=None):
