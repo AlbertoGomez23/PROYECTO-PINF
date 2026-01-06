@@ -1,10 +1,9 @@
-import streamlit as st
-import sys
-import os
 import shutil
-from pathlib import Path
+import sys
 from datetime import datetime
+from pathlib import Path
 
+import streamlit as st
 
 # =============================================================================
 # 1. CONFIGURACIÓN DE RUTAS E IMPORTACIONES
@@ -20,7 +19,7 @@ try:
     from src.estrellas.main_estrella import generar_datos_estrellas
     ESTRELLAS_AVAILABLE = True
 except ImportError as e:
-    print(f"Error importando Estrellas: {e}") 
+    print(f"Error importando Estrellas: {e}")
     ESTRELLAS_AVAILABLE = False
 
 try:
@@ -70,7 +69,6 @@ st.set_page_config(
 st.title("Almanaque Náutico - Real Instituto y Observatorio de la Armada")
 st.markdown("---")
 
-# --- INICIO CÓDIGO NUEVO ---
 st.markdown("""
     <style>
         button[data-testid="stAppDeployButton"] {
@@ -78,50 +76,50 @@ st.markdown("""
         }
     </style>
 """, unsafe_allow_html=True)
-# --- FIN CÓDIGO NUEVO ---
 
 # =============================================================================
 # 3. SIDEBAR (CONFIGURACIÓN)
 # =============================================================================
 with st.sidebar:
     st.header("Configuración General")
-    
+
     # Selector de Año
     year = st.number_input(
-        "Año del Almanaque", 
-        min_value=1900, 
-        max_value=2100, 
+        "Año del Almanaque",
+        min_value=1900,
+        max_value=2100,
         value=datetime.now().year + 1,
         help="Rango permitido: 1900 - 2100"
     )
 
     st.markdown("---")
     st.header("Parametros Físicos")
-    
+
     # Delta T
-    delta_t_type = st.radio("Configuración Delta T", ["Automático", "Manual"], index=0)
-    
+    delta_t_type = st.radio("Configuración Delta T", [
+                            "Automático", "Manual"], index=0)
+
     delta_t_val = 0.0
     if delta_t_type == "Manual":
         # Rango estricto 0 a 150
         delta_t_val = st.number_input(
-            "Valor Delta T (segundos)", 
-            value=69.0, 
-            step=0.1, 
+            "Valor Delta T (segundos)",
+            value=69.0,
+            step=0.1,
             format="%.2f",
-            min_value=0.0, 
+            min_value=0.0,
             max_value=150.0,
             help="Valor en segundos. Rango permitido: 0 - 150"
         )
     else:
         from src.utils.read_de440 import get_delta_t
         delta_t_val = get_delta_t(year)
-    
+
     # Traducir selección para el backend
     tipo_dt_backend = 'manual' if delta_t_type == "Manual" else 'auto'
 
     st.markdown("---")
-    
+
 
 # =============================================================================
 # 4. ÁREA PRINCIPAL
@@ -130,36 +128,40 @@ col1, col2 = st.columns([1, 2])
 
 with col1:
     st.subheader("Módulos a Calcular")
-    
+
     # --- CHECKBOX MAESTRO (SELECCIONAR TODO) ---
     select_all = st.checkbox("Seleccionar Todos los Módulos", value=True)
-    st.markdown("---") # Pequeña linea separadora
+    st.markdown("---")  # Pequeña linea separadora
 
     # --- Módulo Fichero DAT ---
-    run_fichero_dat = st.checkbox("Páginas Anuales", value=select_all, disabled=not FICHERODAT_AVAILABLE)
+    run_fichero_dat = st.checkbox(
+        "Páginas Anuales", value=select_all, disabled=not FICHERODAT_AVAILABLE)
     if not FICHERODAT_AVAILABLE:
         st.error("Datos del año no encontrado en src/")
 
     # --- Módulo Estrellas ---
     # El valor por defecto ahora depende de 'select_all'
-    run_stars = st.checkbox("Estrellas", value=select_all, disabled=not ESTRELLAS_AVAILABLE)
-    
+    run_stars = st.checkbox("Estrellas", value=select_all,
+                            disabled=not ESTRELLAS_AVAILABLE)
+
     if not ESTRELLAS_AVAILABLE:
         st.error("Módulo Estrellas no encontrado en src/")
-            
+
     # --- Módulo Polar ---
-    run_polar = st.checkbox("Polar", value=select_all, disabled=not POLAR_AVAILABLE)
+    run_polar = st.checkbox("Polar", value=select_all,
+                            disabled=not POLAR_AVAILABLE)
     if not POLAR_AVAILABLE:
         st.error("Modulo Polar no encontrado en src/")
 
     # --- Módulo FaseLuna ---
-    run_luna = st.checkbox("Fases de la Luna", value=select_all, disabled=not LUNA_AVAILABLE)
+    run_luna = st.checkbox(
+        "Fases de la Luna", value=select_all, disabled=not LUNA_AVAILABLE)
     if not LUNA_AVAILABLE:
         st.error("Módulo Fase de la Luna no encontrado en src/")
-    
 
     # --- Módulo Paralajes Venus y Marte ---
-    run_paralajes = st.checkbox("Paralajes de Venus y Marte", value=select_all, disabled=not PARALAJES_AVAILABLE)
+    run_paralajes = st.checkbox(
+        "Paralajes de Venus y Marte", value=select_all, disabled=not PARALAJES_AVAILABLE)
     if not PARALAJES_AVAILABLE:
         st.error("Módulo Paralajes de Venus y Marte no encontrado en src/")
 
@@ -171,22 +173,23 @@ with col1:
 
 with col2:
     st.subheader("Generación y Resultados")
-    
-    generate_btn = st.button("Generar Almanaque", type="primary", use_container_width=True)
+
+    generate_btn = st.button(
+        "Generar Almanaque", type="primary", use_container_width=True)
 
     if generate_btn:
         output_paths = []
-        
+
         # Contenedor de estado
         with st.status("Procesando calculos...", expanded=True) as status:
-            
+
             # 1. Ejecutar Estrellas
             if run_stars and ESTRELLAS_AVAILABLE:
                 st.write(f"Calculando Efemérides de Estrellas (Año {year})...")
                 try:
                     path_stars = generar_datos_estrellas(
-                        ano=year, 
-                        tipo_delta_t=tipo_dt_backend, 
+                        ano=year,
+                        tipo_delta_t=tipo_dt_backend,
                         valor_delta_t_manual=delta_t_val
                     )
                     output_paths.append(path_stars)
@@ -213,7 +216,7 @@ with col2:
                     st.error(f"Error en Polar: {e}")
                     status.update(label="Error en el proceso", state="error")
                     st.stop()
-            
+
             # 3. Ejecutar Fase de la Luna
             if run_luna and LUNA_AVAILABLE:
                 st.write(f"Calculando Fases de la Luna (Año {year})...")
@@ -221,7 +224,7 @@ with col2:
                     path_fase_luna = FasesDeLaLunaLatex(ano=year,
                                                         dt_in=delta_t_val
                                                         )
-                    
+
                     # Evitar duplicar ruta si es la misma
                     if path_fase_luna not in output_paths:
                         output_paths.append(path_fase_luna)
@@ -230,7 +233,7 @@ with col2:
                     st.error(f"Error en Fases de la Luna: {e}")
                     status.update(label="Error en el proceso", state="error")
                     st.stop()
-            
+
             # 4. Ejecutar Fichero DAT
             if run_fichero_dat and FICHERODAT_AVAILABLE:
                 st.write(f"Generando Datos del año (Año {year})...")
@@ -247,10 +250,11 @@ with col2:
                     st.error(f"Error en Datos del año: {e}")
                     status.update(label="Error en el proceso", state="error")
                     st.stop()
-            
+
             # 5. Ejecutar Paralajes Venus y Marte
             if run_paralajes and PARALAJES_AVAILABLE:
-                st.write(f"Calculando Paralajes de Venus y Marte (Año {year})...")
+                st.write(
+                    f"Calculando Paralajes de Venus y Marte (Año {year})...")
                 try:
                     path_paralajes = calculo_paralaje(
                         anio=year,
@@ -287,14 +291,20 @@ with col2:
 
         # GESTIÓN DE DESCARGA
         if output_paths:
-            final_dir = output_paths[0] 
-            
-            if os.path.exists(final_dir):
-                                
-                # Crear ZIP
+            # Determinar el directorio base (puede ser un directorio o el padre de un archivo)
+            first_path = Path(output_paths[0])
+            if first_path.is_dir():
+                final_dir = first_path
+            else:
+                final_dir = first_path.parent
+
+            if final_dir.exists():
+                # Crear ZIP en /tmp (el OS lo limpiará periódicamente)
                 zip_filename = f"Almanaque_Nautico_{year}"
-                zip_path = shutil.make_archive(final_dir, 'zip', final_dir)
-                
+                temp_zip_base = Path("/tmp") / zip_filename
+                zip_path = shutil.make_archive(
+                    str(temp_zip_base), 'zip', final_dir)
+
                 # Botón de Descarga
                 with open(zip_path, "rb") as fp:
                     st.download_button(
