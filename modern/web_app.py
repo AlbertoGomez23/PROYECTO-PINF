@@ -24,6 +24,13 @@ except ImportError as e:
     ESTRELLAS_AVAILABLE = False
 
 try:
+    from src.uso_anio_siguiente.uso_anio_siguiente import compute_corrections
+    USO_ANIO_SIGUIENTE_AVAILABLE = True
+except ImportError as e:
+    print(f"Error importando Uso Año Siguiente: {e}")
+    USO_ANIO_SIGUIENTE_AVAILABLE = False
+
+try:
     from src.polar.main_polar import generar_datos_polar
     POLAR_AVAILABLE = True
 except ImportError as e:
@@ -156,6 +163,12 @@ with col1:
     if not PARALAJES_AVAILABLE:
         st.error("Módulo Paralajes de Venus y Marte no encontrado en src/")
 
+    # --- Módulo Uso Año Siguiente ---
+    run_uso_anio = st.checkbox(
+        "Uso Año Siguiente", value=select_all, disabled=not USO_ANIO_SIGUIENTE_AVAILABLE)
+    if not USO_ANIO_SIGUIENTE_AVAILABLE:
+        st.error("Módulo Uso Año Siguiente no encontrado en src/")
+
 with col2:
     st.subheader("Generación y Resultados")
     
@@ -251,8 +264,26 @@ with col2:
                     st.error(f"Error en Paralajes de Venus y Marte: {e}")
                     status.update(label="Error en el proceso", state="error")
                     st.stop()
-            
-            status.update(label="Calculos finalizados correctamente", state="complete", expanded=False)
+
+            # 6. Ejecutar Uso Año Siguiente
+            if run_uso_anio and USO_ANIO_SIGUIENTE_AVAILABLE:
+                st.write(f"Calculando Uso Año Siguiente (Año {year})...")
+                try:
+                    path_uso_anio = compute_corrections(
+                        ano=year,
+                        dt_seconds=delta_t_val
+                    )
+                    # Evitar duplicar ruta si es la misma
+                    if path_uso_anio not in output_paths:
+                        output_paths.append(path_uso_anio)
+                    st.write("Uso Año Siguiente completado.")
+                except Exception as e:
+                    st.error(f"Error en Uso Año Siguiente: {e}")
+                    status.update(label="Error en el proceso", state="error")
+                    st.stop()
+            status.update(label=f"Calculos finalizados correctamente",
+                          state="complete", expanded=False)
+        st.success(f"✅ Proceso completado")
 
         # GESTIÓN DE DESCARGA
         if output_paths:
