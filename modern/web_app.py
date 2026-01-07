@@ -287,7 +287,7 @@ with col2:
                     st.stop()
             status.update(label=f"Calculos finalizados correctamente",
                           state="complete", expanded=False)
-        st.success(f"✅ Proceso completado")
+        st.success(f" Proceso completado")
 
         # GESTIÓN DE DESCARGA
         if output_paths:
