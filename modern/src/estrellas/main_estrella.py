@@ -21,8 +21,8 @@ ERR_REDONDEO = 0.5e-01
 def dia_juliano_simple(dia, mes, anio):
     from utils.read_de440 import _ts
 
-    # _ts.utc usa internamente la Delta T configurada (automática o manual)
-    t = _ts.utc(anio, mes, dia)
+    # _ts.ut1 usa internamente la Delta T configurada (automática o manual)
+    t = _ts.ut1(anio, mes, dia)
     return t.tt
 
 # Función que no actue por terminal

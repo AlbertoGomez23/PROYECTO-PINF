@@ -100,7 +100,7 @@ def generar_datos_polar(ano, valor_delta_t):
             anio_calc = ano + 1
             
         # Calcular Tiempos (usará el Delta T configurado en _ts)
-        t = ts.utc(anio_calc, mes_calc, 1)
+        t = ts.ut1(anio_calc, mes_calc, 1)
         
         # Observación con Skyfield
         astrometric = earth.at(t).observe(polaris)
@@ -417,7 +417,7 @@ def main():
                 # Opción 1: Automático
                 if hasattr(read_de440, 'load_data'):
                     read_de440.load_data()
-                t_info = read_de440._ts.utc(ano, 1, 1)
+                t_info = read_de440._ts.ut1(ano, 1, 1)
                 print(f" -> Modo Automático seleccionado. (Valor aprox. 1-Ene: {t_info.delta_t:.2f} s)")                
                 seleccionado = True
                 
@@ -481,7 +481,7 @@ def main():
             anio_calc = ano + 1
             
         # Calcular Tiempos (usará el Delta T configurado en _ts)
-        t = ts.utc(anio_calc, mes_calc, 1)
+        t = ts.ut1(anio_calc, mes_calc, 1)
         
         # Observación con Skyfield
         astrometric = earth.at(t).observe(polaris)
