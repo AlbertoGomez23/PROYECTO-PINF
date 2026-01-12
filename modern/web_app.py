@@ -114,10 +114,7 @@ with st.sidebar:
     else:
         from src.utils.read_de440 import get_delta_t
         delta_t_val = get_delta_t(year)
-
-    # Traducir selección para el backend
-    tipo_dt_backend = 'manual' if delta_t_type == "Manual" else 'auto'
-
+    
     st.markdown("---")
 
 
@@ -188,9 +185,8 @@ with col2:
                 st.write(f"Calculando Efemérides de Estrellas (Año {year})...")
                 try:
                     path_stars = generar_datos_estrellas(
-                        ano=year,
-                        tipo_delta_t=tipo_dt_backend,
-                        valor_delta_t_manual=delta_t_val
+                        year,
+                        delta_t_val
                     )
                     output_paths.append(path_stars)
                     st.write("Estrellas completado.")
@@ -204,9 +200,8 @@ with col2:
                 st.write(f"Calculando Polar (Año {year})...")
                 try:
                     path_polar = generar_datos_polar(
-                        ano=year,
-                        tipo_delta_t=tipo_dt_backend,
-                        valor_delta_t_manual=delta_t_val
+                        year,
+                        delta_t_val
                     )
                     # Evitar duplicar ruta si es la misma
                     if path_polar not in output_paths:

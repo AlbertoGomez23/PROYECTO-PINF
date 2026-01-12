@@ -4,7 +4,8 @@ import os
 import sys
 from pathlib import Path
 from skyfield.api import Star, Angle
-
+# Importamos la utilidad de Skyfield compartida
+from utils import read_de440
 # =============================================================================
 # 1. CONFIGURACIÓN DE RUTAS
 # =============================================================================
@@ -14,10 +15,6 @@ ruta_src = current_dir.parent.parent
 if str(ruta_src) not in sys.path:
     sys.path.append(str(ruta_src))
 
-# Importamos la utilidad de Skyfield compartida
-from utils import read_de440
-# Importamos la función para configurar el Delta T desde el módulo hermano
-from estrellas.calculos import aplicar_delta_t_manual
 
 # =============================================================================
 # 2. CONSTANTES Y DATOS DE LA POLAR (J2000 - FK5)
@@ -46,7 +43,7 @@ def crear_carpeta_resultados(ano):
         print(f"Error creando directorio {ano_dir}: {e}")
         sys.exit(1)
 
-def generar_datos_polar(ano, tipo_delta_t, valor_delta_t_manual=0.0):
+def generar_datos_polar(ano, valor_delta_t):
     """
     Genera los cálculos de la Polar para el almanaque.
     Retorna: str (ruta del directorio de salida)
@@ -54,19 +51,6 @@ def generar_datos_polar(ano, tipo_delta_t, valor_delta_t_manual=0.0):
     print("*" * 70)
     print("PÁGINAS 382-385\n") 
 
-    # 1. LÓGICA DELTA T
-    if tipo_delta_t == 'manual':
-        aplicar_delta_t_manual(valor_delta_t_manual)
-        print(f" [Polar] Delta T Manual: {valor_delta_t_manual:.2f} s")
-    else:
-        # Automático
-        if hasattr(read_de440, 'load_data'):
-            read_de440.load_data()
-        
-        # Obtenemos info solo para mostrar al usuario
-        t_info = read_de440._ts.utc(ano, 1, 1)
-        print(f" [Polar] Delta T Automático (aprox. 1-Ene: {t_info.delta_t:.2f} s)")
-        aplicar_delta_t_manual(None) 
 
     resultados_dir = crear_carpeta_resultados(ano)
     can = str(ano)
@@ -434,15 +418,13 @@ def main():
                 if hasattr(read_de440, 'load_data'):
                     read_de440.load_data()
                 t_info = read_de440._ts.utc(ano, 1, 1)
-                print(f" -> Modo Automático seleccionado. (Valor aprox. 1-Ene: {t_info.delta_t:.2f} s)")
-                aplicar_delta_t_manual(None) # Reset a automático
+                print(f" -> Modo Automático seleccionado. (Valor aprox. 1-Ene: {t_info.delta_t:.2f} s)")                
                 seleccionado = True
                 
             elif seleccion_dt == '2':
                 # Opción 2: Manual
                 try:
-                    val_dt = float(input(" Introduzca valor de Delta T (segundos): "))
-                    aplicar_delta_t_manual(val_dt)
+                    val_dt = float(input(" Introduzca valor de Delta T (segundos): "))                    
                     print(f" -> Delta T fijado manualmente a: {val_dt:.2f} s")
                     seleccionado = True
                 except ValueError:

@@ -1,19 +1,17 @@
 # src/estrellas/main_estrella.py
-from estrellas.herramientas_legacy import HOMI, HOMIEN, SIGRMI, UNANGGRA
-from estrellas.calculos import (aplicar_delta_t_manual,
-                                calcular_paso_meridiano_greenwich,
-                                calcular_posicion_aparente, cargar_catalogo)
 import os
 import sys
 from pathlib import Path
+
 
 # Ajuste de rutas
 BASE_DIR = Path(__file__).resolve().parent.parent
 if str(BASE_DIR) not in sys.path:
     sys.path.append(str(BASE_DIR))
 
-# AÑADIMOS 'aplicar_delta_t_manual' A LA IMPORTACIÓN
-# Importaciones propias
+from estrellas.herramientas_legacy import HOMI, HOMIEN, SIGRMI, UNANGGRA
+from estrellas.calculos import (calcular_paso_meridiano_greenwich,
+                                calcular_posicion_aparente, cargar_catalogo)
 
 # Constantes
 PI = 3.141592653589793
@@ -30,7 +28,7 @@ def dia_juliano_simple(dia, mes, anio):
 # Función que no actue por terminal
 
 
-def generar_datos_estrellas(ano, tipo_delta_t, valor_delta_t_manual=0.0):
+def generar_datos_estrellas(ano, valor_delta_t):
 
     # =========================================================================
     # 1. DEFINICIÓN DE ETIQUETAS
@@ -207,20 +205,8 @@ def generar_datos_estrellas(ano, tipo_delta_t, valor_delta_t_manual=0.0):
     for idx, val in enumerate(indices_lll):
         lll[idx] = l[val-1]
 
-    # 1. Configuración de Delta T
-    if tipo_delta_t == 'manual':
-        aplicar_delta_t_manual(valor_delta_t_manual)
-        print(f" [Backend] Usando Delta T Manual: {valor_delta_t_manual}s")
-    else:
-        # Modo automático
-        aplicar_delta_t_manual(None)
-        from utils.read_de440 import _ts
-        t_info = _ts.utc(ano, 1, 1)
-        print(
-            f" [Backend] Usando Delta T Automático (aprox {t_info.delta_t:.2f}s)")
-
-    # 2. Configuración de fecha y fichero según MODO
-
+    # 1. Configuración de fecha y fichero según MODO
+    dt = valor_delta_t
     dia_mes1 = 1
     fichero_cat1 = "estAN_UH.txt"
     num_estrellas1 = 50
@@ -800,31 +786,7 @@ def main():
 
     # ============================================================
     # LÓGICA DE SELECCIÓN DE DELTA T (Modificación Solicitada)
-    # ============================================================
-    seleccionado = False
-    while not seleccionado:
-        print("\n--- CONFIGURACIÓN DELTA T (TT - UT) ---")
-        print("1. Automático (Archivos Skyfield/IERS)")
-        print("2. Manual (Introducir valor constante)")
-        seleccion_dt = input("Seleccione (1/2): ")
-
-        if seleccion_dt == '2':
-            try:
-                val_dt = float(
-                    input(" Introduzca valor de Delta T (segundos): "))
-                aplicar_delta_t_manual(val_dt)
-                seleccionado = True
-            except ValueError:
-                print(" Valor no válido. Usando automático por defecto.")
-                aplicar_delta_t_manual(None)
-        elif seleccion_dt == '1':
-            # Solo para mostrar información, calculamos el Delta T actual automático
-            from utils.read_de440 import _ts
-            t_info = _ts.utc(ano, 1, 1)
-            print(
-                f" Usando modo Automático. (Valor aprox. para 1-Ene-{ano}: {t_info.delta_t:.2f} s)")
-            aplicar_delta_t_manual(None)
-            seleccionado = True
+    # ============================================================    
 
     # ============================================================
 
@@ -1179,4 +1141,4 @@ def main():
 
 if __name__ == "__main__":
     # main()
-    generar_datos_estrellas(2027, "aoto")
+    generar_datos_estrellas(2027, 70)

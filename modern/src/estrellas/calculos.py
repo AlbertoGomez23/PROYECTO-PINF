@@ -23,38 +23,6 @@ class DatosEstrella:
         self.tip = ""
         self.skyfield_star = None
 
-def aplicar_delta_t_manual(delta_t_sec):
-    """
-    Sobrescribe el comportamiento de Delta T de Skyfield (read_de440._ts)
-    para usar un valor constante definido por el usuario.
-    
-    Args:
-        delta_t_sec (float): Valor de Delta T en segundos.
-    """
-    # Aseguramos que el timescale esté cargado antes de modificarlo
-    if hasattr(read_de440, 'load_data'):
-        read_de440.load_data()
-    
-    ts = read_de440._ts
-    
-    if delta_t_sec is not None:
-        valor = float(delta_t_sec)
-        
-        # Definimos una función que devuelva siempre el valor constante.
-        # Skyfield espera que esta función acepte un argumento (tt) 
-        # y devuelva un array numpy o escalar del mismo tamaño.
-        def constant_delta_t(tt):
-            return np.ones_like(tt) * valor
-            
-        # 1. Eliminamos la tabla interna de IERS (para que no busque en ficheros)
-        ts.delta_t_table = None
-        # 2. Asignamos la nueva función constante
-        ts.delta_t_function = constant_delta_t
-        print(f" [SISTEMA] Delta T configurado manualmente a fijo: {valor} segundos.")
-    else:
-        # Si es None, no tocamos nada y Skyfield usa su automático por defecto
-        pass
-
 def cargar_catalogo(ruta_fichero):
     """
     Lee el fichero estANFKH.txt o estAN_UH.txt y crea objetos Star de Skyfield.
