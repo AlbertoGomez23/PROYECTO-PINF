@@ -102,7 +102,7 @@ def get_delta_t(ano):
     POSTCONDICIÓN:  Devuelve un float con Delta T en SEGUNDOS.
                     Tiene un error mínimo debido a que se calcula para la mitad del año.
     """
-    t = _ts.utc(ano, 7, 2, 12, 0, 0)
+    t = _ts.ut1(ano, 7, 2, 12, 0, 0)
     
     return t.delta_t
 
