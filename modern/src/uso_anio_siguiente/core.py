@@ -5,9 +5,12 @@ Lógica de cálculo astronómico para las correcciones del uso del Almanaque Ná
 el año siguiente.
 """
 
+import logging
 import math
 from datetime import date
 from typing import cast
+
+logger = logging.getLogger(__name__)
 
 # Imports compatibles con web_app.py y CLI
 try:
@@ -25,31 +28,38 @@ DPI = 2.0 * PI
 DEGREE = PI / 180.0
 
 
-def calculate_corrections_data(ano, dt_seconds):
+def calculate_corrections_data(ano: int, dt_seconds: float) -> dict[tuple[int, int], float]:
     """
-    Calcula los datos de corrección basándose en la diferencia de GHA del Sol.
+    CABECERA:       calculate_corrections_data(ano, dt_seconds)
+    DESCRIPCIÓN:    Calcula las correcciones de GHA del Sol para uso del Almanaque
+                    Náutico el año siguiente.
 
-    Fórmulas:
-      1. GAST (Greenwich Apparent Sidereal Time): theta
-      2. AR (Ascensión Recta Aparente del Sol): alpha
-      3. GHA (Greenwich Hour Angle): GHA = theta - alpha
-      4. Corrección = GHA(año+1) - GHA(año)
+    PRECONDICIÓN:   - ano: Año del Almanaque actual (int, ej: 2025).
+                    - dt_seconds: ΔT = TT - UT1 en segundos (float, ~69s en 2025).
+                      Diferencia entre Tiempo Terrestre y Tiempo Universal 1.
 
-    Retorna:
-    - data: Diccionario {(dia, mes): valor_float}
-            Si el día no existe, no estará en el diccionario.
+    POSTCONDICIÓN:  Diccionario {(dia, mes): corrección_arcmin}.
+                    - Claves: tuplas (día, mes) con día ∈ [1,31], mes ∈ [1,12].
+                    - Valores: corrección en minutos de arco (float).
+                    - Los días inexistentes (ej: 30 Feb) se omiten.
+
+                    ALGORITMO:
+                    1. GAST (θ): Greenwich Apparent Sidereal Time [calculado en UT1]
+                    2. AR (α): Ascensión Recta Aparente del Sol [calculado en TT]
+                    3. GHA = θ - α
+                    4. Corrección = GHA(año+1) - GHA(año), normalizado a [-π, π]
     """
-    data = {}
+    data: dict[tuple[int, int], float] = {}
 
-    print(
+    logger.info(
         f"Calculando correcciones para {ano}-{ano+1} con DT={dt_seconds}s...")
 
     for mes in range(1, 13):
         for dia in range(1, 32):
             try:
-                # Usamos datetime.date para validación estricta.
-                _ = date(ano, mes, dia)
-                _ = date(ano + 1, mes, dia)
+                # Validación estricta: date() lanza ValueError si la fecha no existe
+                date(ano, mes, dia)
+                date(ano + 1, mes, dia)
 
                 t_base_1 = ts.utc(ano, mes, dia)
                 t_base_2 = ts.utc(ano + 1, mes, dia)
