@@ -1,0 +1,16 @@
+version: '3.8'
+services:
+  app:
+    build: .
+    image: almanaque-app
+    container_name: almanaque-container
+
+    ports:
+      - "8501:8501"
+
+    volumes:
+      - .:/app
+      - /app/.venv
+      - /app/venv
+
+    command: streamlit run modern/web_app.py --server.port=8501 --server.address=0.0.0.0

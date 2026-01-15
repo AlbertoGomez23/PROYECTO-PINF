@@ -1,0 +1,18 @@
+# Cálculo astronómico
+skyfield==1.53
+jplephem==2.23
+numpy
+
+# Utilidades CLI y Sistema
+click==8.3.1
+colorama==0.4.6
+requests==2.32.5
+
+# Web Interface
+streamlit
+
+# Dependencias base (mantenidas por compatibilidad)
+certifi==2025.11.12
+charset-normalizer==3.4.4
+idna==3.11
+urllib3==2.5.0
