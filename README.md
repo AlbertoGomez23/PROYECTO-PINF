@@ -41,7 +41,6 @@ Este proyecto está configurado para un entorno de desarrollo reproducible:
 - **Nomenclatura:** Se mantienen nombres de funciones científicas críticas (ej. `pleph`, `GeoDista`) para preservar el mapeo con la documentación original.
 - **Estructura:** La organización de módulos y funciones sigue la lógica del código Fortran original para facilitar la comparación y validación.
 - **Documentación:** Comentarios y docstrings detallados para cada función y módulo.
-- **Zonas Horarias:** Manejo explícito de UTC y conversiones a hora local según sea necesario.  
 - **Unidades:** Consistencia en el uso de unidades (grados, radianes, horas, días julianos, etc.) según la convención astronómica estándar.
 - **Dependencias:** Uso de bibliotecas científicas estándar, como `numpy` y `skyfield`, para cálculos astronómicos precisos, evitando implementaciones personalizadas cuando sea posible.
 
