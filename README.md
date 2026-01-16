@@ -5,7 +5,7 @@ Este proyecto consiste en la modernización del software de generación del Alma
 ## 🛠️ Tecnologías Principales
 
 - **Lenguaje:** Python 3.12+
-- **Motor Astronómico:** `skyfield`, `jplephem` y `numpy`.
+- **Motor Astronómico:** `skyfield` y `numpy`.
 - **Datos:** Efemérides JPL SPICE (Kernel `de440.bsp`).
 - **Interfaz:** interfaz web basada en `Streamlit`.
 
