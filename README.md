@@ -1,8 +1,6 @@
 # Almanaque Náutico - Modernización (PROYECTO PINF)
 
-> Proyecto de modernización del software de generación del Almanaque Náutico del Real Instituto y Observatorio de la Armada (ROA), desarrollado como una colaboración entre la Universidad de Cádiz y la Armada.
-
-Modernización del software de generación del Almanaque Náutico del Real Instituto y Observatorio de la Armada (ROA), migrando la lógica desde Fortran 77 a Python 3.12+.
+Este proyecto consiste en la modernización del software de generación del Almanaque Náutico del Real Instituto y Observatorio de la Armada (ROA). Desarrollado en colaboración entre la Universidad de Cádiz y la Armada, el trabajo se centra en la migración de la lógica de cálculo desde Fortran 77 a Python 3.12+.
 
 ## 🛠️ Tecnologías Principales
 
