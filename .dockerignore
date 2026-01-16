@@ -3,9 +3,25 @@ __pycache__
 venv/
 .venv/
 .git
+.gitignore
+.github
+.vscode
+.devcontainer
 .env
-# Código legado (Fortran) no necesario en producción
-legacy/
-# Git LFS y objetos grandes de git
+.env.local
+.pytest_cache
+.coverage
+.streamlit
+*.log
+*.egg-info
+dist/
+build/
+.DS_Store
+
+# Git LFS y objetos grandes
 .git/lfs/
 .git/objects/
+
+# Documentación local
+*.md
+docker-compose.yml

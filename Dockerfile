@@ -1,36 +1,42 @@
 FROM python:3.12.12-slim-bookworm
 
-# Crear un usuario no privilegiado (coincidiendo con devcontainer)
-RUN useradd -m -u 1000 vscode
+# Metadata
+LABEL maintainer="https://github.com/AlbertoGomez23/PROYECTO-PINF"
 
 WORKDIR /app
 
-# Establecer PYTHONPATH. 
-# Si tu estructura es /app/modern/src, esto ayuda a que Python encuentre los módulos.
-ENV PYTHONPATH=/app/modern/src
+# Variables de entorno optimizadas
+ENV PYTHONPATH=/app/modern/src \
+    PATH="${PATH}:/home/appuser/.local/bin" \
+    PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    PIP_NO_CACHE_DIR=1 \
+    PIP_DISABLE_PIP_VERSION_CHECK=1
 
-# Seguridad Defensiva: Añadir binarios de usuario al FINAL del PATH.
-ENV PATH="${PATH}:/home/vscode/.local/bin"
+# Crear usuario no privilegiado con grupo
+RUN groupadd -r appuser && useradd -r -g appuser -u 1000 appuser
 
+# Copiar solo requirements primero (mejor aprovechamiento de caché)
 COPY requirements.txt .
 
-# Usar caché de pip para acelerar reconstrucciones
-RUN --mount=type=cache,target=/root/.cache/pip \
-    pip install -r requirements.txt
+# Instalar dependencias con limpieza de caché
+RUN pip install --no-cache-dir -r requirements.txt && \
+    find /usr/local -type d -name "__pycache__" -exec rm -rf {} + 2>/dev/null || true && \
+    find /usr/local -name "*.pyc" -delete && \
+    apt-get clean && rm -rf /var/lib/apt/lists/*
 
-COPY --chown=vscode:vscode . .
+# Copiar código fuente
+COPY --chown=appuser:appuser . .
 
 # Cambiar al usuario no privilegiado
-USER vscode
+USER appuser
 
-# --- [CAMBIOS PARA LA INTERFAZ WEB] ---
-
-# 1. Exponer el puerto
-# Streamlit usa el 8501 por defecto. Es vital decirle a Docker que este puerto será usado.
+# Exponer puerto Streamlit
 EXPOSE 8501
 
-# 2. Comando de arranque
-# Cambiamos 'python modern/app.py' por el comando de Streamlit.
-# --server.address=0.0.0.0 es OBLIGATORIO en Docker (si no, solo escucha dentro del contenedor y no desde tu PC).
-# Asumo que 'web_app.py' está dentro de la carpeta 'modern', igual que estaba 'app.py'.
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+  CMD python -c "import requests; requests.get('http://localhost:8501/_stcore/health')" || exit 1
+
+# Comando de arranque
 CMD ["streamlit", "run", "modern/web_app.py", "--server.port=8501", "--server.address=0.0.0.0"]
