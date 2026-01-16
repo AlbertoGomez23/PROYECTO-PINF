@@ -6,7 +6,7 @@ from pathlib import Path
 import streamlit as st
 
 # =============================================================================
-# GENERADOR DE ALMANAQUE NÁUTICO - INTERFAZ STREAMLIT
+# ALMANAQUE NÁUTICO - GENERADOR DE DATOS - INTERFAZ STREAMLIT
 # =============================================================================
 # Este script actúa como el punto de entrada principal para la aplicación web.
 # Gestiona la configuración del usuario, la ejecución secuencial de los módulos
@@ -54,7 +54,7 @@ except ImportError as e:
 # =============================================================================
 # 2. CONFIGURACIÓN DE PÁGINA Y ESTILOS CSS
 # =============================================================================
-st.set_page_config(page_title="Almanaque Náutico ROA", layout="wide")
+st.set_page_config(page_title="Almanaque Náutico - Generador de datos", layout="wide")
 
 # Inyección de CSS personalizado
 st.markdown("""
@@ -129,14 +129,15 @@ with col_config:
 
 # --- COLUMNA DERECHA: SELECCIÓN Y EJECUCIÓN ---
 with col_main:
-    st.title("Generador de Almanaque Náutico")
+    st.title("Almanaque Náutico - Generador de datos")
     st.markdown("---")
 
-    col_mod, col_res = st.columns([1.5, 2.5], gap="medium")
-
     # Selección de módulos
+    st.subheader("Módulos")
+    
+    col_mod, col_exec = st.columns([1, 1], gap="medium")
+    
     with col_mod:
-        st.subheader("Módulos")
         st.checkbox("Seleccionar Todos", key="select_all", on_change=check_all)
         st.markdown("---")
         st.checkbox("Páginas Anuales", key="run_fichero_dat",
@@ -149,28 +150,21 @@ with col_main:
         st.checkbox("Uso Año Siguiente", key="run_uso_anio",
                     on_change=check_individual)
 
-    # Área de Ejecución y Resultados
-    with col_res:
+    # Botones de Ejecución
+    with col_exec:
         st.subheader("Ejecución")
         st.write("Pulse generar para iniciar el cálculo.")
+        
+        start_btn = st.button("Generar datos", type="primary", use_container_width=True)
+        download_placeholder = st.empty()
 
-        # Layout de botones (Generar vs Descargar) en la misma fila
-        c_btn_gen, c_btn_down = st.columns([1, 1], gap="small")
+    # Contenedor para barra de progreso y mensajes de estado
+    status_container = st.container()
 
-        with c_btn_gen:
-            start_btn = st.button("Generar Almanaque", type="primary")
-
-        with c_btn_down:
-            # Placeholder vacío donde aparecerá el botón de descarga dinámicamente
-            download_placeholder = st.empty()
-
-        # Contenedor para barra de progreso y mensajes de estado
-        status_container = st.container()
-
-        # =====================================================================
-        # LÓGICA DE EJECUCIÓN (Al pulsar Generar)
-        # =====================================================================
-        if start_btn:
+    # =====================================================================
+    # LÓGICA DE EJECUCIÓN (Al pulsar Generar)
+    # =====================================================================
+    if start_btn:
 
             # -----------------------------------------------------------------
             # PASO 1: LIMPIEZA INICIAL DEL ENTORNO
