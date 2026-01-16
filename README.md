@@ -50,6 +50,48 @@ docker-compose up --build
 
 Accede a la aplicación en `http://localhost:8501`
 
+### Opción 4: Instalación Local sin Docker (Python nativo)
+
+Para ejecutar directamente en tu sistema sin contenedores:
+
+1. **Requisitos:** Python 3.12+ instalado en tu sistema.
+2. Clonar el repositorio:
+
+   ```bash
+   git clone https://github.com/AlbertoGomez23/PROYECTO-PINF.git
+   cd PROYECTO-PINF
+   ```
+
+3. Crear y activar un entorno virtual:
+
+   **Windows (PowerShell):**
+
+   ```bash
+   python -m venv venv
+   .\venv\Scripts\Activate.ps1
+   ```
+
+   **Linux/macOS:**
+
+   ```bash
+   python3 -m venv venv
+   source venv/bin/activate
+   ```
+
+4. Instalar dependencias:
+
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+5. Ejecutar la aplicación web:
+
+   ```bash
+   streamlit run modern/web_app.py
+   ```
+
+Accede a la aplicación en `http://localhost:8501`
+
 ## 📂 Estructura del Proyecto
 
 - `modern/src/`: Implementación moderna en Python (siguiendo la estructura de `legacy/`).
