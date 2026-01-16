@@ -3,7 +3,7 @@
 {
 	"name": "Existing Dockerfile",
 	"dockerComposeFile": "../docker-compose.yml",
-	"service": "app",
+	"service": "almanaque",
 	"workspaceFolder": "/app",
 	"features": {
 		"ghcr.io/devcontainers/features/git-lfs:1": {},
@@ -30,22 +30,16 @@
 			// Add the IDs of extensions you want installed when the container is created.
 			"extensions": [
 				"ms-python.autopep8",
-				"formulahendry.code-runner",
 				"ms-azuretools.vscode-docker",
-				"donjayamanne.githistory",
-				"GitHub.vscode-pull-request-github",
 				"ms-python.isort",
-				"DavidAnson.vscode-markdownlint",
 				"christian-kohler.path-intellisense",
-				"mathematic.vscode-pdf",
 				"ms-python.python",
 				"KevinRose.vsc-python-indent",
-				"tamasfe.even-better-toml",
-				"GitHub.copilot-chat"
+				"tamasfe.even-better-toml"
 			],
 			"settings": {
 				"[python]": {
-					"editor.defaultFormatter": "ms-python.autopep8",
+					"editor.defaultFormatter": "ms-python.python",
 					"editor.formatOnSave": true,
 					"editor.codeActionsOnSave": {
 						"source.organizeImports": "explicit"
