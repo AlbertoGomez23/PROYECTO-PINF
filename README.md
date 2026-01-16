@@ -11,21 +11,26 @@ Este proyecto consiste en la modernización del software de generación del Alma
 
 ## 📥 Instalación
 
-Clonar el repositorio e instalar las dependencias:
-
 ```bash
 git clone https://github.com/AlbertoGomez23/PROYECTO-PINF
 cd PROYECTO-PINF
-pip install -r requirements.txt
 ```
 
-## 🚀 Desarrollo con Dev Containers
+### Opción 1: Dev Containers (Recomendado)
 
-Este proyecto está configurado para un entorno de desarrollo reproducible:
+Entorno de desarrollo reproducible con todas las dependencias preinstaladas:
 
-1. Requisitos: Docker Desktop (debe estar instalado y en ejecución) y la extensión **Dev Containers** para VS Code.
+1. **Requisitos:** Docker Desktop y la extensión **Dev Containers** para VS Code.
 2. Abrir la carpeta en VS Code.
-3. Al recibir el aviso, seleccionar **"Reopen in Container"** (o vía paleta: `F1` > `Dev Containers: Reopen in Container`).
+3. Seleccionar **"Reopen in Container"** (o vía paleta: `F1` > `Dev Containers: Reopen in Container`).
+
+### Opción 2: Instalación Local
+
+Si prefieres no usar Docker, instala las dependencias manualmente:
+
+```bash
+pip install -r requirements.txt
+```
 
 ## 📂 Estructura del Proyecto
 
