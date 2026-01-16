@@ -65,7 +65,7 @@ Accede a la aplicación en `http://localhost:8501`
 - **Unidades:** Consistencia en el uso de unidades (grados, radianes, horas, días julianos, etc.) según la convención astronómica estándar.
 - **Dependencias:** Uso de bibliotecas científicas estándar, como `numpy` y `skyfield`, para cálculos astronómicos precisos, evitando implementaciones personalizadas cuando sea posible.
 
-## Deploy a DockerHub
+## 🐳 Deploy a DockerHub
 
 Para publicar una nueva versión de la imagen en DockerHub:
 
