@@ -41,7 +41,7 @@ pip install -r requirements.txt
 ## 📏 Convenciones
 
 - **Rutas:** Uso estricto de `pathlib.Path` relativo a `__file__`.
-- **Nomenclatura:** Se mantienen nombres de funciones científicas críticas (ej. `pleph`, `GeoDista`) para preservar el mapeo con la documentación original.
+- **Nomenclatura:** Se mantienen nombres de funciones científicas críticas (ej. `pleph`) para preservar el mapeo con la documentación original.
 - **Estructura:** La organización de módulos y funciones sigue la lógica del código Fortran original para facilitar la comparación y validación.
 - **Documentación:** Comentarios y docstrings detallados para cada función y módulo.
 - **Unidades:** Consistencia en el uso de unidades (grados, radianes, horas, días julianos, etc.) según la convención astronómica estándar.
